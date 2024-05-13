@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright Marco Freemantle
 
 #include "Player/VBPlayerController.h"
 #include "EnhancedInputSubsystems.h"
@@ -53,6 +52,7 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(LookUpAction, ETriggerEvent::Triggered, this, &AVBPlayerController::LookUp);
 	VBInputComponent->BindAction(TurnAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Turn);
 	VBInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Jump);
+	VBInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Interact);
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -94,5 +94,13 @@ void AVBPlayerController::Jump(const FInputActionValue& InputActionValue)
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
 		VBCharacter->Jump();
+	}
+}
+
+void AVBPlayerController::Interact(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->EquipWeapon();
 	}
 }
