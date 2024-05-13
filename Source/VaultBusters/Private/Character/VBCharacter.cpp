@@ -23,6 +23,7 @@ AVBCharacter::AVBCharacter()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
@@ -78,14 +79,6 @@ void AVBCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
-void AVBCharacter::EquipWeapon() const
-{
-	if(Combat && HasAuthority())
-	{
-		Combat->EquipWeapon(OverlappingWeapon);
-	}
-}
-
 void AVBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
 	if(OverlappingWeapon)
@@ -96,5 +89,38 @@ void AVBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickupWidget(false);
 	}
+}
+
+void AVBCharacter::EquipWeapon()
+{
+	if(Combat)
+	{
+		if(HasAuthority())
+		{
+			Combat->EquipWeapon(OverlappingWeapon);
+		}
+		else
+		{
+			ServerEquipWeapon();
+		}
+	}
+}
+
+void AVBCharacter::ServerEquipWeapon_Implementation()
+{
+	if(Combat)
+	{
+		Combat->EquipWeapon(OverlappingWeapon);
+	}
+}
+
+bool AVBCharacter::IsWeaponEquipped() const
+{
+	return (Combat && Combat->EquippedWeapon);
+}
+
+bool AVBCharacter::IsAiming() const
+{
+	return (Combat && Combat->bAiming);
 }
 

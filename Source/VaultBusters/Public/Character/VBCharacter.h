@@ -25,9 +25,12 @@ public:
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 
-	void EquipWeapon() const;
+	void EquipWeapon();
 
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
+
+	bool IsWeaponEquipped() const;
+	bool IsAiming() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,4 +50,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UCombatComponent* Combat;
+
+	UFUNCTION(Server, Reliable)
+	void ServerEquipWeapon();
 };

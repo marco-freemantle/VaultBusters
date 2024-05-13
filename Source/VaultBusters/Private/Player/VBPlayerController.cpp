@@ -5,6 +5,7 @@
 #include "Character/VBCharacter.h"
 #include "GameFramework/Character.h"
 #include "Input/VBInputComponent.h"
+#include "VBComponents/CombatComponent.h"
 
 AVBPlayerController::AVBPlayerController()
 {
@@ -52,7 +53,11 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(LookUpAction, ETriggerEvent::Triggered, this, &AVBPlayerController::LookUp);
 	VBInputComponent->BindAction(TurnAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Turn);
 	VBInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Jump);
-	VBInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Interact);
+	VBInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Equip);
+	VBInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AVBPlayerController::Crouch);
+	VBInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AVBPlayerController::UnCrouch);
+	VBInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AVBPlayerController::Aim);
+	VBInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopAim);
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -97,10 +102,42 @@ void AVBPlayerController::Jump(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AVBPlayerController::Interact(const FInputActionValue& InputActionValue)
+void AVBPlayerController::Equip(const FInputActionValue& InputActionValue)
 {
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
 		VBCharacter->EquipWeapon();
+	}
+}
+
+void AVBPlayerController::Crouch(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->Crouch();
+	}
+}
+
+void AVBPlayerController::UnCrouch(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->UnCrouch();
+	}
+}
+
+void AVBPlayerController::Aim(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->GetCombatComponent()->SetAiming(true);
+	}
+}
+
+void AVBPlayerController::StopAim(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->GetCombatComponent()->SetAiming(false);
 	}
 }

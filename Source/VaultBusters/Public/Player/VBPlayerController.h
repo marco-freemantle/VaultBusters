@@ -42,13 +42,23 @@ private:
 	TObjectPtr<UInputAction> JumpAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<UInputAction> InteractAction;
+	TObjectPtr<UInputAction> EquipAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> CrouchAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> AimAction;
 
 	void Move(const FInputActionValue& InputActionValue);
 	void LookUp(const FInputActionValue& InputActionValue);
 	void Turn(const FInputActionValue& InputActionValue);
 	void Jump(const FInputActionValue& InputActionValue);
-	void Interact(const FInputActionValue& InputActionValue);
+	void Equip(const FInputActionValue& InputActionValue);
+	void Crouch(const FInputActionValue& InputActionValue);
+	void UnCrouch(const FInputActionValue& InputActionValue);
+	void Aim(const FInputActionValue& InputActionValue);
+	void StopAim(const FInputActionValue& InputActionValue);
 
 	void CursorTrace();
 };

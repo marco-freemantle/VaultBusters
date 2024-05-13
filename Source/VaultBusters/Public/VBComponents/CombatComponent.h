@@ -16,16 +16,32 @@ class VAULTBUSTERS_API UCombatComponent : public UActorComponent
 
 public:	
 	UCombatComponent();
-	friend class AVBCharacter;
 
+	// Allows AVBCharacter full access to member variables and methods
+	friend class AVBCharacter;
+	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	void EquipWeapon(AWeapon* WeaponToEquip);
+
+	UPROPERTY(Replicated)
+	bool bAiming;
+
+	void SetAiming(bool bIsAiming);
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetAiming(bool bIsAiming);
+
+	UFUNCTION()
+	void OnRep_EquippedWeapon();
 
 private:
 	AVBCharacter* Character;
+
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeapon* EquippedWeapon;
-		
 };
