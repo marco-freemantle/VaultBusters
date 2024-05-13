@@ -3,6 +3,8 @@
 
 #include "Player/VBPlayerController.h"
 #include "EnhancedInputSubsystems.h"
+#include "Character/VBCharacter.h"
+#include "GameFramework/Character.h"
 #include "Input/VBInputComponent.h"
 
 AVBPlayerController::AVBPlayerController()
@@ -50,6 +52,7 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Move);
 	VBInputComponent->BindAction(LookUpAction, ETriggerEvent::Triggered, this, &AVBPlayerController::LookUp);
 	VBInputComponent->BindAction(TurnAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Turn);
+	VBInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Jump);
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -83,5 +86,13 @@ void AVBPlayerController::Turn(const FInputActionValue& InputActionValue)
 	if (APawn* ControlledPawn = GetPawn<APawn>())
 	{
 		ControlledPawn->AddControllerYawInput(InputAxisVector.X);
+	}
+}
+
+void AVBPlayerController::Jump(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->Jump();
 	}
 }
