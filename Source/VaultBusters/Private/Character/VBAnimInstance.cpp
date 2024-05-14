@@ -42,10 +42,15 @@ void UVBAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaSeconds, 5.f);
 	YawOffset = DeltaRotation.Yaw;
 
+	// Leaning
 	CharacterRotationLastFrame = CharacterRotation;
 	CharacterRotation = VBCharacter->GetActorRotation();
 	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
 	const float Target = Delta.Yaw / DeltaSeconds;
 	const float Interp = FMath::FInterpTo(Lean, Target, DeltaSeconds, 6.f);
 	Lean = FMath::Clamp(Interp, -90.f, 90.f);
+
+	// Aim offsets
+	AO_Yaw = VBCharacter->GetAO_Yaw();
+	AO_Pitch = VBCharacter->GetAO_Pitch();
 }

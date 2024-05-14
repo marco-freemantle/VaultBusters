@@ -28,12 +28,16 @@ public:
 	void EquipWeapon();
 
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
+	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
+	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 
 	bool IsWeaponEquipped() const;
 	bool IsAiming() const;
 
 protected:
 	virtual void BeginPlay() override;
+
+	void AimOffset(float DeltaTime);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -53,4 +57,8 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerEquipWeapon();
+
+	float AO_Yaw;
+	float AO_Pitch;
+	FRotator StartingAimRotation;
 };
