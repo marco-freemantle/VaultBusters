@@ -5,6 +5,7 @@
 #include "Character/VBCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Weapon/Weapon.h"
 
 // Animation blueprint BeginPlay equivalent
 void UVBAnimInstance::NativeInitializeAnimation()
@@ -32,8 +33,10 @@ void UVBAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsInAir = VBCharacter->GetCharacterMovement()->IsFalling();
 	bIsAccelerating = VBCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
 	bWeaponEquipped = VBCharacter->IsWeaponEquipped();
+	EquippedWeapon = VBCharacter->GetEquippedWeapon();
 	bIsCrouched = VBCharacter->bIsCrouched;
 	bAiming = VBCharacter->IsAiming();
+	TurningInPlace = VBCharacter->GetTurningInPlace();
 
 	// Offset Yaw for strafing
 	FRotator AimRotation = VBCharacter->GetBaseAimRotation();
@@ -53,4 +56,14 @@ void UVBAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// Aim offsets
 	AO_Yaw = VBCharacter->GetAO_Yaw();
 	AO_Pitch = VBCharacter->GetAO_Pitch();
+
+	if(bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && VBCharacter->GetMesh())
+	{
+		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"),  RTS_World);
+		FVector OutPosition;
+		FRotator OutRotation;
+		VBCharacter->GetMesh()->TransformToBoneSpace(FName("Hand_R"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+		LeftHandTransform.SetLocation(OutPosition);
+		LeftHandTransform.SetRotation(FQuat(OutRotation));
+	}
 }

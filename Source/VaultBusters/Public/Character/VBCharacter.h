@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "VBTypes/TurningInPlace.h"
 #include "VBCharacter.generated.h"
 
 class USpringArmComponent;
@@ -30,6 +31,8 @@ public:
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
+	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
+	AWeapon* GetEquippedWeapon() const;
 
 	bool IsWeaponEquipped() const;
 	bool IsAiming() const;
@@ -59,6 +62,10 @@ private:
 	void ServerEquipWeapon();
 
 	float AO_Yaw;
+	float InterpAO_Yaw;
 	float AO_Pitch;
 	FRotator StartingAimRotation;
+
+	ETurningInPlace TurningInPlace;
+	void TurnInPlace(float DeltaTime);
 };
