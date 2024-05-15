@@ -42,7 +42,7 @@ void UVBAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	FRotator AimRotation = VBCharacter->GetBaseAimRotation();
 	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(VBCharacter->GetVelocity());
 	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation);
-	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaSeconds, 5.f);
+	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaSeconds, 10.f);
 	YawOffset = DeltaRotation.Yaw;
 
 	// Leaning
