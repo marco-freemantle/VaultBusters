@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -27,7 +29,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void ShowPickupWidget(bool bShowWidget);
 	void SetWeaponState(EWeaponState State);
-	void Fire();
+	virtual void Fire(const FVector& HitTarget);
 
 protected:
 	virtual void BeginPlay() override;
@@ -53,6 +55,13 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickupWidget;
+
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	USoundBase* FireSound;
+
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	UNiagaraSystem* FireEffectMuzzle;
+	
 
 public:
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }

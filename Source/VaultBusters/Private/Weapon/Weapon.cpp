@@ -5,6 +5,7 @@
 #include "Character/VBCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 AWeapon::AWeapon()
@@ -88,9 +89,13 @@ void AWeapon::SetWeaponState(EWeaponState State)
 	}
 }
 
-void AWeapon::Fire()
+void AWeapon::Fire(const FVector& HitTarget)
 {
-	
+	if(FireEffectMuzzle)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(FireEffectMuzzle, GetWeaponMesh(), FName("muzzle"), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	}
 }
 
 void AWeapon::OnRep_WeaponState()

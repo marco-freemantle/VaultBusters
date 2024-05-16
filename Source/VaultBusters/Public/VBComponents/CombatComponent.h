@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+#define TRACE_LENGTH 80000.f
+
 class AWeapon;
 class AVBCharacter;
 
@@ -43,6 +45,14 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	UFUNCTION(Server, Reliable)
+	void ServerFire();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastFire();
+
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+
 private:
 	AVBCharacter* Character;
 
@@ -63,4 +73,6 @@ private:
 	float BaseArmLength;
 
 	void InterpolateCameraArmLength(float DeltaTime) const;
+
+	FVector HitTarget;
 };
