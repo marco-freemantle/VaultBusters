@@ -27,8 +27,12 @@ public:
 
 	UPROPERTY(Replicated)
 	bool bAiming;
-
+	
 	void SetAiming(bool bIsAiming);
+
+	void Fire(bool bFiring);
+	
+	bool bIsFiring;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -50,4 +54,13 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed;
+
+	// For interpolating between camera boom arm lengths when aiming
+	UPROPERTY(EditAnywhere)
+	float AimArmLength;
+
+	UPROPERTY(EditAnywhere)
+	float BaseArmLength;
+
+	void InterpolateCameraArmLength(float DeltaTime) const;
 };

@@ -4,6 +4,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Character/VBCharacter.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Input/VBInputComponent.h"
 #include "VBComponents/CombatComponent.h"
 
@@ -58,6 +59,8 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AVBPlayerController::UnCrouch);
 	VBInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AVBPlayerController::Aim);
 	VBInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopAim);
+	VBInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AVBPlayerController::Fire);
+	VBInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopFire);
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -114,6 +117,7 @@ void AVBPlayerController::Crouch(const FInputActionValue& InputActionValue)
 {
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
+		if(VBCharacter->GetCharacterMovement()->IsFalling()) return;
 		VBCharacter->Crouch();
 	}
 }
@@ -139,5 +143,21 @@ void AVBPlayerController::StopAim(const FInputActionValue& InputActionValue)
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
 		VBCharacter->GetCombatComponent()->SetAiming(false);
+	}
+}
+
+void AVBPlayerController::Fire(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->GetCombatComponent()->Fire(true);
+	}
+}
+
+void AVBPlayerController::StopFire(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->GetCombatComponent()->Fire(false);
 	}
 }

@@ -5,15 +5,18 @@
 #include "Character/VBCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 
 UCombatComponent::UCombatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	BaseWalkSpeed = 400.f;
 	AimWalkSpeed = 200.f;
+	BaseArmLength = 250.f;
+	AimArmLength = 85.f;
 }
 
 void UCombatComponent::BeginPlay()
@@ -23,12 +26,15 @@ void UCombatComponent::BeginPlay()
 	if(Character)
 	{
 		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+		Character->GetCameraBoom()->TargetArmLength = BaseArmLength;
 	}
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	InterpolateCameraArmLength(DeltaTime);
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -64,14 +70,23 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	}
 }
 
+void UCombatComponent::Fire(bool bFiring)
+{
+	bIsFiring = bFiring;
+	if(EquippedWeapon == nullptr) return;
+	if(Character && bIsFiring)
+	{
+		Character->PlayFireMonatge(bAiming);
+		EquippedWeapon->Fire();
+	}
+}
+
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
+	if(!Character || !Character->GetEquippedWeapon()) return;
 	bAiming = bIsAiming;
 	ServerSetAiming(bIsAiming);
-	if(Character)
-	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
-	}
+	Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
@@ -80,6 +95,17 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 	if(Character)
 	{
 		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	}
+}
+
+void UCombatComponent::InterpolateCameraArmLength(float DeltaTime) const
+{
+	if(Character)
+	{
+		float DesiredArmLength = bAiming ? AimArmLength : BaseArmLength;
+		float CurrentArmLength = Character->GetCameraBoom()->TargetArmLength;
+		float InterpArmLength = FMath::FInterpTo(CurrentArmLength, DesiredArmLength, DeltaTime, 10.f); // 10.f is the interpolation speed, adjust as necessary
+		Character->GetCameraBoom()->TargetArmLength = InterpArmLength;
 	}
 }
 

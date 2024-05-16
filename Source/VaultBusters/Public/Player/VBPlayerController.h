@@ -50,6 +50,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> AimAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> FireAction;
+
 	void Move(const FInputActionValue& InputActionValue);
 	void LookUp(const FInputActionValue& InputActionValue);
 	void Turn(const FInputActionValue& InputActionValue);
@@ -59,6 +62,8 @@ private:
 	void UnCrouch(const FInputActionValue& InputActionValue);
 	void Aim(const FInputActionValue& InputActionValue);
 	void StopAim(const FInputActionValue& InputActionValue);
+	void Fire(const FInputActionValue& InputActionValue);
+	void StopFire(const FInputActionValue& InputActionValue);
 
 	void CursorTrace();
 };

@@ -88,6 +88,11 @@ void AWeapon::SetWeaponState(EWeaponState State)
 	}
 }
 
+void AWeapon::Fire()
+{
+	
+}
+
 void AWeapon::OnRep_WeaponState()
 {
 	switch (WeaponState)
