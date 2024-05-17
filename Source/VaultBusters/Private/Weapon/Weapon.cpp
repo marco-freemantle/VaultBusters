@@ -91,7 +91,7 @@ void AWeapon::SetWeaponState(EWeaponState State)
 
 void AWeapon::Fire(const FVector& HitTarget)
 {
-	if(FireEffectMuzzle)
+	if(FireEffectMuzzle && FireSound)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAttached(FireEffectMuzzle, GetWeaponMesh(), FName("muzzle"), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
