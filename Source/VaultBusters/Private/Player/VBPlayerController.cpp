@@ -150,7 +150,7 @@ void AVBPlayerController::Fire(const FInputActionValue& InputActionValue)
 {
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
-		VBCharacter->GetCombatComponent()->Fire(true);
+		VBCharacter->GetCombatComponent()->FireButtonPressed(true);
 	}
 }
 
@@ -158,6 +158,6 @@ void AVBPlayerController::StopFire(const FInputActionValue& InputActionValue)
 {
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
-		VBCharacter->GetCombatComponent()->Fire(false);
+		VBCharacter->GetCombatComponent()->FireButtonPressed(false);
 	}
 }
