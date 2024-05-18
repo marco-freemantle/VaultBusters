@@ -5,8 +5,10 @@
 #include "Character/VBCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Weapon/Casing.h"
 
 AWeapon::AWeapon()
 {
@@ -95,6 +97,17 @@ void AWeapon::Fire(const FVector& HitTarget)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAttached(FireEffectMuzzle, GetWeaponMesh(), FName("muzzle"), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	}
+	if(CasingClass)
+	{
+		if(const USkeletalMeshSocket* AmmoEjectSocket = WeaponMesh->GetSocketByName(FName("AmmoEject")))
+		{
+			FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(WeaponMesh);
+			if(UWorld* World = GetWorld())
+			{
+				World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
+			}
+		}
 	}
 }
 

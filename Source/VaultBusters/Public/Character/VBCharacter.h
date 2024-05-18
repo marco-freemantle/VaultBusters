@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "VBTypes/TurningInPlace.h"
 #include "VBCharacter.generated.h"
 
@@ -13,7 +14,7 @@ class AWeapon;
 class UCombatComponent;
 
 UCLASS()
-class VAULTBUSTERS_API AVBCharacter : public ACharacter
+class VAULTBUSTERS_API AVBCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
 	GENERATED_BODY()
 
@@ -23,7 +24,11 @@ public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
-	void PlayFireMonatge(bool bAiming);
+	void PlayFireMontage(bool bAiming);
+	void PlayHitReactMontage();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 
@@ -34,6 +39,7 @@ public:
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	AWeapon* GetEquippedWeapon() const;
 
 	bool IsWeaponEquipped() const;
@@ -41,7 +47,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 	void AimOffset(float DeltaTime);
 
 private:
@@ -73,4 +78,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category=Combat)
 	UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category=Combat)
+	UAnimMontage* HitReactMontage;
+
+	void HideCameraIfCharacterClose();
 };

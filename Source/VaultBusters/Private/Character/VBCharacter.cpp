@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "VaultBusters/VaultBusters.h"
 #include "VBComponents/CombatComponent.h"
 #include "Weapon/Weapon.h"
 
@@ -31,7 +32,9 @@ AVBCharacter::AVBCharacter()
 	Combat->SetIsReplicated(true);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	NetUpdateFrequency = 66.f;
@@ -55,7 +58,25 @@ void AVBCharacter::PostInitializeComponents()
 	}
 }
 
-void AVBCharacter::PlayFireMonatge(bool bAiming)
+void AVBCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AVBCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	AimOffset(DeltaTime);
+	HideCameraIfCharacterClose();
+}
+
+void AVBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void AVBCharacter::PlayFireMontage(bool bAiming)
 {
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
 
@@ -68,22 +89,17 @@ void AVBCharacter::PlayFireMonatge(bool bAiming)
 	}
 }
 
-void AVBCharacter::BeginPlay()
+void AVBCharacter::PlayHitReactMontage()
 {
-	Super::BeginPlay();
-	
-}
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
 
-void AVBCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	AimOffset(DeltaTime);
-}
-
-void AVBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		FName SectionName = FName("FromFront");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
 }
 
 void AVBCharacter::SetOverlappingWeapon(AWeapon* Weapon)
@@ -206,10 +222,36 @@ void AVBCharacter::TurnInPlace(float DeltaTime)
 	}
 }
 
+void AVBCharacter::MulticastHit_Implementation()
+{
+	PlayHitReactMontage();
+}
+
+void AVBCharacter::HideCameraIfCharacterClose()
+{
+	if(!IsLocallyControlled()) return;
+
+	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < 200.f)
+	{
+		GetMesh()->SetVisibility(false);
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
+		}
+	}
+	else
+	{
+		GetMesh()->SetVisibility(true);
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
+		}
+	}
+}
+
 AWeapon* AVBCharacter::GetEquippedWeapon() const
 {
 	if(Combat == nullptr) return nullptr;
 	return Combat->EquippedWeapon;
-	
 }
 

@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "HUD/VBHUD.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 80000.f
 
+class AVBHUD;
+class AVBPlayerController;
 class AWeapon;
 class AVBCharacter;
 
@@ -53,8 +56,12 @@ protected:
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
+	void SetHUDCrosshairs(float DeltaTime);
+
 private:
 	AVBCharacter* Character;
+	AVBPlayerController* Controller;
+	AVBHUD* HUD;
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeapon* EquippedWeapon;
@@ -65,12 +72,25 @@ private:
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed;
 
-	// For interpolating between camera boom arm lengths when aiming
-	UPROPERTY(EditAnywhere)
-	float AimArmLength;
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
+	float CrosshairAimFactor;
+	float CrosshairShootingFactor;
 
-	UPROPERTY(EditAnywhere)
-	float BaseArmLength;
+	FHUDPackage HUDPackage;
 
-	void InterpolateCameraArmLength(float DeltaTime) const;
+	FVector HitTarget;
+	
+	// Aiming FOV 
+	float DefaultFOV;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float ZoomedFOV = 30.f;
+
+	float CurrentFOV;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float ZoomInterpSpeed = 20.f;
+
+	void InterpFOV(float DeltaTime);
 };
