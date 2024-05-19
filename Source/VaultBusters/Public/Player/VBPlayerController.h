@@ -65,5 +65,8 @@ private:
 	void Fire(const FInputActionValue& InputActionValue);
 	void StopFire(const FInputActionValue& InputActionValue);
 
-	void CursorTrace();
+	void InterpCameraCrouch(float DeltaTime);
+	float BaseZLocation = 145.f;
+	float CrouchedZLocation = 100.f;
+	float CurrentZLocation = 145.f;
 };

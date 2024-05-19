@@ -2,6 +2,7 @@
 
 #include "VBComponents/CombatComponent.h"
 
+#include "KismetTraceUtils.h"
 #include "Camera/CameraComponent.h"
 #include "Character/VBCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -12,6 +13,8 @@
 #include "Player/VBPlayerController.h"
 #include "Weapon/Weapon.h"
 #include "TimerManager.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Weapon/Projectile.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -34,6 +37,12 @@ void UCombatComponent::BeginPlay()
         	DefaultFOV = Character->GetFollowCamera()->FieldOfView;
         	CurrentFOV = DefaultFOV;
         }
+
+		if(UWorld* World = GetWorld())
+		{
+			InvalidHitActor = World->SpawnActor<AActor>(InvalidHitActorClass, FVector(), FRotator());
+			InvalidHitActor->SetActorHiddenInGame(true);
+		}
 	}
 }
 
@@ -46,6 +55,10 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
 		HitTarget = HitResult.ImpactPoint;
+
+		FHitResult BarrelHitResult;
+		TraceFromBarrel(BarrelHitResult);
+		BarrelHitTarget = BarrelHitResult.ImpactPoint;
 		
 		SetHUDCrosshairs(DeltaTime);
 		InterpFOV(DeltaTime);
@@ -126,6 +139,33 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		{
 			HUDPackage.CrosshairsColour = FLinearColor::White;
 		}
+	}
+}
+
+void UCombatComponent::TraceFromBarrel(FHitResult& TraceHitResult)
+{
+	if(!EquippedWeapon) return;
+	const USkeletalMeshSocket* MuzzleSocket = EquippedWeapon->GetWeaponMesh()->GetSocketByName(FName("muzzle"));
+	FTransform SocketTransform = MuzzleSocket->GetSocketTransform(EquippedWeapon->GetWeaponMesh());
+
+	GetWorld()->LineTraceSingleByChannel(TraceHitResult, SocketTransform.GetLocation(), HitTarget, ECC_Visibility);
+
+	if(!TraceHitResult.bBlockingHit || Cast<AProjectile>(TraceHitResult.GetActor()))
+	{
+		InvalidHitActor->SetActorHiddenInGame(true);
+		return;
+	}
+
+	double VectorDistance = UKismetMathLibrary::Vector_Distance(TraceHitResult.ImpactPoint, HitTarget);
+
+	if(VectorDistance > 10)
+	{
+		InvalidHitActor->SetActorHiddenInGame(false);
+		InvalidHitActor->SetActorLocation(TraceHitResult.ImpactPoint);
+	}
+	else
+	{
+		InvalidHitActor->SetActorHiddenInGame(true);
 	}
 }
 

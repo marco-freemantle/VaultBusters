@@ -5,6 +5,7 @@
 #include "Character/VBCharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Input/VBInputComponent.h"
 #include "VBComponents/CombatComponent.h"
 
@@ -17,14 +18,25 @@ void AVBPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	// CursorTrace();
+	InterpCameraCrouch(DeltaTime);
 }
 
-void AVBPlayerController::CursorTrace()
+void AVBPlayerController::InterpCameraCrouch(float DeltaTime)
 {
-	FHitResult CursorHit;
-	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
-	if (!CursorHit.bBlockingHit) return;
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		if(!VBCharacter->GetCameraBoom()) return;
+		if(VBCharacter->bIsCrouched)
+		{
+			CurrentZLocation = FMath::FInterpTo(CurrentZLocation, CrouchedZLocation, DeltaTime, 7.f);
+			VBCharacter->GetCameraBoom()->SetRelativeLocation(FVector(0.f, 0.f, CurrentZLocation));
+		}
+		else
+		{
+			CurrentZLocation = FMath::FInterpTo(CurrentZLocation, BaseZLocation, DeltaTime, 7.f);
+			VBCharacter->GetCameraBoom()->SetRelativeLocation(FVector(0.f, 0.f, CurrentZLocation));
+		}
+	}
 }
 
 void AVBPlayerController::BeginPlay()

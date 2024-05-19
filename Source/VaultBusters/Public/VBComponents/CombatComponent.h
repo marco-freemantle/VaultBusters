@@ -55,6 +55,7 @@ protected:
 	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+	void TraceFromBarrel(FHitResult& TraceHitResult);
 	void Fire();
 
 	void SetHUDCrosshairs(float DeltaTime);
@@ -81,6 +82,12 @@ private:
 	FHUDPackage HUDPackage;
 
 	FVector HitTarget;
+	FVector BarrelHitTarget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> InvalidHitActorClass;
+
+	AActor* InvalidHitActor;
 	
 	// Aiming FOV 
 	float DefaultFOV;
