@@ -44,6 +44,7 @@ public:
 
 	bool IsWeaponEquipped() const;
 	bool IsAiming() const;
+	FVector GetHitTarget() const;
 
 protected:
 	virtual void BeginPlay() override;

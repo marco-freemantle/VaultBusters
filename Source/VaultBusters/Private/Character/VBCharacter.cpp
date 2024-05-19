@@ -162,6 +162,12 @@ bool AVBCharacter::IsAiming() const
 	return (Combat && Combat->bAiming);
 }
 
+FVector AVBCharacter::GetHitTarget() const
+{
+	if (Combat == nullptr) return FVector();
+	return Combat->HitTarget;
+}
+
 void AVBCharacter::AimOffset(float DeltaTime)
 {
 	if(Combat && Combat->EquippedWeapon == nullptr) return;
