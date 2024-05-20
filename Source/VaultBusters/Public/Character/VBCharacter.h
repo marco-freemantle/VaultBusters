@@ -44,7 +44,6 @@ public:
 
 	bool IsWeaponEquipped() const;
 	bool IsAiming() const;
-	FVector GetHitTarget() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -84,4 +83,14 @@ private:
 	UAnimMontage* HitReactMontage;
 
 	void HideCameraIfCharacterClose();
+
+	// Player health
+	UPROPERTY(EditAnywhere, Category="Player Stats")
+	float MaxHealth = 100.f;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Health, Category="Player Stats", VisibleAnywhere)
+	float Health = 100.f;
+
+	UFUNCTION()
+	void OnRep_Health();
 };

@@ -65,13 +65,5 @@ void UVBAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		VBCharacter->GetMesh()->TransformToBoneSpace(FName("Hand_R"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
 		LeftHandTransform.SetLocation(OutPosition);
 		LeftHandTransform.SetRotation(FQuat(OutRotation));
-
-		if (VBCharacter->IsLocallyControlled())
-		{
-			bLocallyControlled = true;
-			FTransform RightHandTransform = VBCharacter->GetMesh()->GetSocketTransform(FName("Hand_R"), ERelativeTransformSpace::RTS_World);
-			RightHandRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - VBCharacter->GetHitTarget()));
-			RightHandRotation.Roll += 180;
-		}
 	}
 }

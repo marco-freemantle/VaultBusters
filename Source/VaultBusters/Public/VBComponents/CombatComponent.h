@@ -87,6 +87,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> InvalidHitActorClass;
 
+	UPROPERTY()
 	AActor* InvalidHitActor;
 	
 	// Aiming FOV 

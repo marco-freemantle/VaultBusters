@@ -46,6 +46,7 @@ void AVBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AVBCharacter, OverlappingWeapon, COND_OwnerOnly);
+	DOREPLIFETIME(AVBCharacter, Health);
 }
 
 void AVBCharacter::PostInitializeComponents()
@@ -162,12 +163,6 @@ bool AVBCharacter::IsAiming() const
 	return (Combat && Combat->bAiming);
 }
 
-FVector AVBCharacter::GetHitTarget() const
-{
-	if (Combat == nullptr) return FVector();
-	return Combat->HitTarget;
-}
-
 void AVBCharacter::AimOffset(float DeltaTime)
 {
 	if(Combat && Combat->EquippedWeapon == nullptr) return;
@@ -259,5 +254,9 @@ AWeapon* AVBCharacter::GetEquippedWeapon() const
 {
 	if(Combat == nullptr) return nullptr;
 	return Combat->EquippedWeapon;
+}
+
+void AVBCharacter::OnRep_Health()
+{
 }
 

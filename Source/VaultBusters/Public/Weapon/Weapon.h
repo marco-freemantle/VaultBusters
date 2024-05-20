@@ -8,6 +8,8 @@
 #include "Weapon.generated.h"
 
 class ACasing;
+class USphereComponent;
+class UWidgetComponent;
 
 UENUM(BlueprintType)
 enum class EWeaponState : uint8
@@ -76,7 +78,7 @@ private:
 	USkeletalMeshComponent* WeaponMesh;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	class USphereComponent* AreaSphere;
+	USphereComponent* AreaSphere;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties", ReplicatedUsing = OnRep_WeaponState)
 	EWeaponState WeaponState;
@@ -85,7 +87,7 @@ private:
 	void OnRep_WeaponState();
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	class UWidgetComponent* PickupWidget;
+	UWidgetComponent* PickupWidget;
 
 	UPROPERTY(EditAnywhere, Category = "Firing")
 	USoundBase* FireSound;
