@@ -4,10 +4,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/VBGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/VBPlayerController.h"
+#include "Player/VBPlayerState.h"
 #include "VaultBusters/VaultBusters.h"
 #include "VBComponents/CombatComponent.h"
 #include "Weapon/Weapon.h"
@@ -36,6 +38,8 @@ AVBCharacter::AVBCharacter()
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	NetUpdateFrequency = 66.f;
@@ -77,6 +81,19 @@ void AVBCharacter::Tick(float DeltaTime)
 
 	AimOffset(DeltaTime);
 	HideCameraIfCharacterClose();
+	PollInit();
+}
+
+void AVBCharacter::PollInit()
+{
+	if(VBPlayerState == nullptr)
+	{
+		VBPlayerState = GetPlayerState<AVBPlayerState>();
+		if(VBPlayerState)
+		{
+			VBPlayerState->AddToScore(0.f);
+		}
+	}
 }
 
 void AVBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -170,6 +187,47 @@ bool AVBCharacter::IsAiming() const
 	return (Combat && Combat->bAiming);
 }
 
+void AVBCharacter::Elim()
+{
+	if(Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Dropped();
+	}
+	MulticastElim();
+	GetWorldTimerManager().SetTimer(ElimTimer, this, &AVBCharacter::ElimTimerFinished, ElimDelay);
+}
+
+void AVBCharacter::MulticastElim_Implementation()
+{
+	bElimmed = true;
+
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	if(VBPlayerController)
+	{
+		DisableInput(VBPlayerController);
+	}
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if(Combat && Combat->InvalidHitActor)
+	{
+		Combat->bElimmed = true;
+		Combat->InvalidHitActor->Destroy();
+	}
+}
+
+void AVBCharacter::ElimTimerFinished()
+{
+	AVBGameMode* VBGameMode = GetWorld()->GetAuthGameMode<AVBGameMode>();
+	if(VBGameMode)
+	{
+		VBGameMode->RequestRespawn(this, Controller);
+	}
+}
+
 void AVBCharacter::AimOffset(float DeltaTime)
 {
 	if(Combat && Combat->EquippedWeapon == nullptr) return;
@@ -214,6 +272,15 @@ void AVBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();
 	PlayHitReactMontage();
+
+	if(Health != 0.f) return;
+	AVBGameMode* VBGameMode = GetWorld()->GetAuthGameMode<AVBGameMode>();
+	if(VBGameMode)
+	{
+		VBPlayerController = VBPlayerController == nullptr ? Cast<AVBPlayerController>(Controller) : VBPlayerController;
+		AVBPlayerController* AttackerController = Cast<AVBPlayerController>(InstigatorController);
+		VBGameMode->PlayerEliminated(this, VBPlayerController, AttackerController);
+	}
 }
 
 void AVBCharacter::TurnInPlace(float DeltaTime)

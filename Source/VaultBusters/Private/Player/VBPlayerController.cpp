@@ -43,6 +43,17 @@ void AVBPlayerController::BeginPlay()
 	VBHUD = Cast<AVBHUD>(GetHUD());
 }
 
+void AVBPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	AVBCharacter* VBCharacter = Cast<AVBCharacter>(InPawn);
+	if(VBCharacter)
+	{
+		SetHUDHealth(VBCharacter->GetHealth(), VBCharacter->GetMaxHealth());
+	}
+}
+
 void AVBPlayerController::InterpCameraCrouch(float DeltaTime)
 {
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
@@ -188,5 +199,15 @@ void AVBPlayerController::SetHUDHealth(float Health, float MaxHealth)
 		VBHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
 		FString HealthText = FString::Printf(TEXT("%d"), FMath::CeilToInt(Health));
 		VBHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
+	}
+}
+
+void AVBPlayerController::SetHUDScore(float Score)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->ScoreAmount)
+	{
+		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
+		VBHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
 	}
 }

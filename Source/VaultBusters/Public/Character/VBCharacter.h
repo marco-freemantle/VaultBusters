@@ -8,6 +8,7 @@
 #include "VBTypes/TurningInPlace.h"
 #include "VBCharacter.generated.h"
 
+class AVBPlayerState;
 class AVBPlayerController;
 class USpringArmComponent;
 class UCameraComponent;
@@ -39,10 +40,17 @@ public:
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE float GetHealth() const { return Health; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	AWeapon* GetEquippedWeapon() const;
 
 	bool IsWeaponEquipped() const;
 	bool IsAiming() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastElim();
+
+	void Elim();
 
 protected:
 	virtual void BeginPlay() override;
@@ -50,6 +58,8 @@ protected:
 
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
+
+	void PollInit();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -66,6 +76,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UCombatComponent* Combat;
+
+	AVBPlayerController* VBPlayerController;
+
+	AVBPlayerState* VBPlayerState;
 
 	UFUNCTION(Server, Reliable)
 	void ServerEquipWeapon();
@@ -96,5 +110,11 @@ private:
 	UFUNCTION()
 	void OnRep_Health();
 
-	AVBPlayerController* VBPlayerController;
+	bool bElimmed = false;
+
+	FTimerHandle ElimTimer;
+	void ElimTimerFinished();
+
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
 };

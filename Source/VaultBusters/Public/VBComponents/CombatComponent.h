@@ -89,6 +89,8 @@ private:
 
 	UPROPERTY()
 	AActor* InvalidHitActor;
+
+	bool bElimmed = false;
 	
 	// Aiming FOV 
 	float DefaultFOV;

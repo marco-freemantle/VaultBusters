@@ -21,8 +21,10 @@ class VAULTBUSTERS_API AVBPlayerController : public APlayerController
 public:
 	AVBPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+	virtual void OnPossess(APawn* InPawn) override;
 
 	void SetHUDHealth(float Health, float MaxHealth);
+	void SetHUDScore(float Score);
 
 protected:
 	virtual void BeginPlay() override;
