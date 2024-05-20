@@ -8,6 +8,7 @@
 #include "VBTypes/TurningInPlace.h"
 #include "VBCharacter.generated.h"
 
+class AVBPlayerController;
 class USpringArmComponent;
 class UCameraComponent;
 class AWeapon;
@@ -24,11 +25,9 @@ public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
+	void UpdateHUDHealth();
 	void PlayFireMontage(bool bAiming);
 	void PlayHitReactMontage();
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 
@@ -48,6 +47,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void AimOffset(float DeltaTime);
+
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -93,4 +95,6 @@ private:
 
 	UFUNCTION()
 	void OnRep_Health();
+
+	AVBPlayerController* VBPlayerController;
 };

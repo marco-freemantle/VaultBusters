@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "VBHUD.generated.h"
 
+class UCharacterOverlay;
+
 USTRUCT(BlueprintType)
 struct  FHUDPackage
 {
@@ -32,6 +34,15 @@ public:
 	virtual void DrawHUD() override;
 
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; }
+
+	UPROPERTY(EditAnywhere, Category="Player Stats")
+	TSubclassOf<UUserWidget> CharacterOverlayClass;
+
+	UCharacterOverlay* CharacterOverlay;
+
+protected:
+	virtual void BeginPlay() override;
+	void AddCharacterOverlay();
 
 private:
 	FHUDPackage HUDPackage;

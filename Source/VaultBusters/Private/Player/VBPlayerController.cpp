@@ -3,9 +3,12 @@
 #include "Player/VBPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "Character/VBCharacter.h"
+#include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "HUD/CharacterOverlay.h"
 #include "Input/VBInputComponent.h"
 #include "VBComponents/CombatComponent.h"
 
@@ -19,6 +22,25 @@ void AVBPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	InterpCameraCrouch(DeltaTime);
+}
+
+void AVBPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	check(VBContext);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	if (Subsystem)
+	{
+		Subsystem->AddMappingContext(VBContext, 0);
+	}
+
+	bShowMouseCursor = false;
+
+	FInputModeGameOnly InputModeData;
+	SetInputMode(InputModeData);
+
+	VBHUD = Cast<AVBHUD>(GetHUD());
 }
 
 void AVBPlayerController::InterpCameraCrouch(float DeltaTime)
@@ -37,23 +59,6 @@ void AVBPlayerController::InterpCameraCrouch(float DeltaTime)
 			VBCharacter->GetCameraBoom()->SetRelativeLocation(FVector(0.f, 0.f, CurrentZLocation));
 		}
 	}
-}
-
-void AVBPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-	check(VBContext);
-
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	if (Subsystem)
-	{
-		Subsystem->AddMappingContext(VBContext, 0);
-	}
-
-	bShowMouseCursor = false;
-
-	FInputModeGameOnly InputModeData;
-	SetInputMode(InputModeData);
 }
 
 void AVBPlayerController::SetupInputComponent()
@@ -171,5 +176,17 @@ void AVBPlayerController::StopFire(const FInputActionValue& InputActionValue)
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
 		VBCharacter->GetCombatComponent()->FireButtonPressed(false);
+	}
+}
+
+void AVBPlayerController::SetHUDHealth(float Health, float MaxHealth)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->HealthBar && VBHUD->CharacterOverlay->HealthText)
+	{
+		const float HealthPercent = Health / MaxHealth;
+		VBHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
+		FString HealthText = FString::Printf(TEXT("%d"), FMath::CeilToInt(Health));
+		VBHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 	}
 }

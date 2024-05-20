@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "VBPlayerController.generated.h"
 
+class AVBHUD;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -20,6 +21,8 @@ class VAULTBUSTERS_API AVBPlayerController : public APlayerController
 public:
 	AVBPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+
+	void SetHUDHealth(float Health, float MaxHealth);
 
 protected:
 	virtual void BeginPlay() override;
@@ -69,4 +72,6 @@ private:
 	float BaseZLocation = 145.f;
 	float CrouchedZLocation = 100.f;
 	float CurrentZLocation = 145.f;
+
+	AVBHUD* VBHUD;
 };

@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/VBPlayerController.h"
 #include "VaultBusters/VaultBusters.h"
 #include "VBComponents/CombatComponent.h"
 #include "Weapon/Weapon.h"
@@ -62,6 +63,12 @@ void AVBCharacter::PostInitializeComponents()
 void AVBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UpdateHUDHealth();
+	if(HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &AVBCharacter::ReceiveDamage);
+	}
 }
 
 void AVBCharacter::Tick(float DeltaTime)
@@ -201,6 +208,14 @@ void AVBCharacter::AimOffset(float DeltaTime)
 	}
 }
 
+void AVBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatorController, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+	UpdateHUDHealth();
+	PlayHitReactMontage();
+}
+
 void AVBCharacter::TurnInPlace(float DeltaTime)
 {
 	if(AO_Yaw > 90.f)
@@ -221,11 +236,6 @@ void AVBCharacter::TurnInPlace(float DeltaTime)
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		}
 	}
-}
-
-void AVBCharacter::MulticastHit_Implementation()
-{
-	PlayHitReactMontage();
 }
 
 void AVBCharacter::HideCameraIfCharacterClose()
@@ -256,7 +266,17 @@ AWeapon* AVBCharacter::GetEquippedWeapon() const
 	return Combat->EquippedWeapon;
 }
 
-void AVBCharacter::OnRep_Health()
+void AVBCharacter::UpdateHUDHealth()
 {
+	VBPlayerController = VBPlayerController == nullptr ? Cast<AVBPlayerController>(Controller) : VBPlayerController;
+	if(VBPlayerController)
+	{
+		VBPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
 }
 
+void AVBCharacter::OnRep_Health()
+{
+	UpdateHUDHealth();
+	PlayHitReactMontage();
+}
