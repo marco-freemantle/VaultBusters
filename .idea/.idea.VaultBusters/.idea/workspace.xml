@@ -11,30 +11,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a5dcea6c-be5f-458b-b394-3f57cc1632cc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Animations/Jump_Loop.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Animations/Jump_Loop.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Animations/Jump_Up.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Animations/Jump_Up.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Characters/SKEL_Character_Heist.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Characters/SKEL_Character_Heist.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Characters/SK_Character_Female_Overall_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Characters/SK_Character_Female_Overall_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Sounds/Knife/Cues/Knife_ImpactBody_Cue.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Animation/VBAnimBP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Animation/VBAnimBP.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_CharacterOverlay.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_CharacterOverlay.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Input/IMC_VBContext.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Input/IMC_VBContext.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBPlayerController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBPlayerController.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/BP_AssaultRifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/BP_AssaultRifle.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/BP_Weapon.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/Projectiles/BP_ProjectileBullet.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/Projectiles/BP_ProjectileBullet.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Maps/Test.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/Test.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/VBComponents/CombatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/VBComponents/CombatComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Weapon/ProjectileBullet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Weapon/ProjectileBullet.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Weapon/Weapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Weapon/Weapon.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Character/VBCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Character/VBCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/CharacterOverlay.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/CharacterOverlay.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerController.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/VBComponents/CombatComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/VBComponents/CombatComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Weapon/Weapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Weapon/Weapon.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -270,7 +248,7 @@
       <workItem from="1716196574845" duration="1887000" />
       <workItem from="1716198525901" duration="4507000" />
       <workItem from="1716203121287" duration="6184000" />
-      <workItem from="1716282865124" duration="15629000" />
+      <workItem from="1716282865124" duration="15933000" />
     </task>
     <servers />
   </component>

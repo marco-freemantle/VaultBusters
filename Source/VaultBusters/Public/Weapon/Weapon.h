@@ -69,6 +69,12 @@ public:
 	UPROPERTY(EditAnywhere, Category=Combat)
 	bool bAutomatic = true;
 
+	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_Ammo)
+	int32 Ammo;
+
+	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_MagCapacity)
+	int32 MagCapacity;
+
 	void Dropped();
 	
 protected:
@@ -105,16 +111,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ACasing> CasingClass;
 
-	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_Ammo)
-	int32 Ammo;
-
 	UFUNCTION()
 	void OnRep_Ammo();
 
 	void SpendRound();
-
-	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_MagCapacity)
-	int32 MagCapacity;
 
 	UFUNCTION()
 	void OnRep_MagCapacity();

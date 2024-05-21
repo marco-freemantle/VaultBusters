@@ -62,11 +62,6 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		
 		SetHUDCrosshairs(DeltaTime);
 		InterpFOV(DeltaTime);
-
-		if(Character->IsLocallyControlled())
-		{
-			GEngine->AddOnScreenDebugMessage(1, 0.f, FColor::Red, FString::Printf(TEXT("Aiming: %s - WalkSpeed: %f"), bAiming ? TEXT("true") : TEXT("false"), Character->GetCharacterMovement()->MaxWalkSpeed));
-		}
 	}
 }
 
@@ -105,6 +100,7 @@ void UCombatComponent::DropWeapon()
 	if(EquippedWeapon)
 	{
 		EquippedWeapon->Dropped();
+		EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetFollowCamera()->GetForwardVector() * 600.f, FName(), true);
 	}
 	Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 	if(Controller)
@@ -121,7 +117,17 @@ void UCombatComponent::DropWeapon()
 
 void UCombatComponent::Reload()
 {
-	
+	if(!EquippedWeapon) return;;
+	if(EquippedWeapon->MagCapacity > 0)
+	{
+		ServerReload();
+	}
+}
+
+void UCombatComponent::ServerReload_Implementation()
+{
+	if(!Character) return;
+	Character->PlayReloadMontage();
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()

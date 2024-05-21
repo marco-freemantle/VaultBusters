@@ -92,6 +92,7 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopAim);
 	VBInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AVBPlayerController::Fire);
 	VBInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopFire);
+	VBInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Reload);
 	VBInputComponent->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AVBPlayerController::DropWeapon);
 }
 
