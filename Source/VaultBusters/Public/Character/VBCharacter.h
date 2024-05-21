@@ -29,10 +29,12 @@ public:
 	void UpdateHUDHealth();
 	void PlayFireMontage(bool bAiming);
 	void PlayHitReactMontage();
+	void PlayReloadMontage();
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 
 	void EquipWeapon();
+	void DropWeapon();
 
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
@@ -86,6 +88,9 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerEquipWeapon();
 
+	UFUNCTION(Server, Reliable)
+	void ServerDropWeapon();
+
 	float AO_Yaw;
 	float InterpAO_Yaw;
 	float AO_Pitch;
@@ -99,6 +104,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category=Combat)
 	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category=Combat)
+	UAnimMontage* ReloadMontage;
 
 	void HideCameraIfCharacterClose();
 

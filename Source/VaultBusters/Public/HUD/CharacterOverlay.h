@@ -33,6 +33,12 @@ public:
 	UTextBlock* DeathsAmount;
 
 	UPROPERTY(meta = (BindWidget))
+	UTextBlock* AmmoAmount;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MagCapacity;
+
+	UPROPERTY(meta = (BindWidget))
 	UImage* ImpactCrosshair;
 
 	UPROPERTY(meta = (BindWidget))

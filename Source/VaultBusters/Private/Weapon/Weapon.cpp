@@ -8,6 +8,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/VBPlayerController.h"
 #include "Weapon/Casing.h"
 
 AWeapon::AWeapon()
@@ -59,6 +60,22 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, WeaponState);
+	DOREPLIFETIME(AWeapon, Ammo);
+	DOREPLIFETIME(AWeapon, MagCapacity);
+}
+
+void AWeapon::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+	if(Owner == nullptr)
+	{
+		VBOwnerCharacter = nullptr;
+		VBOwnerController = nullptr;
+	}
+	else
+	{
+		SetHUDAmmo();
+	}
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -139,6 +156,7 @@ void AWeapon::Fire(const FVector& HitTarget)
 			}
 		}
 	}
+	SpendRound();
 }
 
 void AWeapon::ShowPickupWidget(bool bShowWidget)
@@ -155,5 +173,56 @@ void AWeapon::Dropped()
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	WeaponMesh->DetachFromComponent(DetachRules);
 	SetOwner(nullptr);
+	VBOwnerCharacter = nullptr;
+	VBOwnerController = nullptr;
 }
+
+void AWeapon::SetHUDAmmo()
+{
+	VBOwnerCharacter = VBOwnerCharacter == nullptr ? Cast<AVBCharacter>(GetOwner()) : VBOwnerCharacter;
+	if(VBOwnerCharacter)
+	{
+		VBOwnerController = VBOwnerController == nullptr ? Cast<AVBPlayerController>(VBOwnerCharacter->Controller) : VBOwnerController;
+		if(VBOwnerController)
+		{
+			VBOwnerController->SetHUDWeaponAmmo(Ammo);
+			VBOwnerController->SetHUDWeaponMagCapacity(MagCapacity);
+		}
+	}
+}
+
+void AWeapon::SetHUDMagCapacity()
+{
+	VBOwnerCharacter = VBOwnerCharacter == nullptr ? Cast<AVBCharacter>(GetOwner()) : VBOwnerCharacter;
+	if(VBOwnerCharacter)
+	{
+		VBOwnerController = VBOwnerController == nullptr ? Cast<AVBPlayerController>(VBOwnerCharacter->Controller) : VBOwnerController;
+		if(VBOwnerController)
+		{
+			VBOwnerController->SetHUDWeaponMagCapacity(MagCapacity);
+		}
+	}
+}
+
+void AWeapon::SpendRound()
+{
+	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
+	SetHUDAmmo();
+}
+
+void AWeapon::OnRep_Ammo()
+{
+	SetHUDAmmo();
+}
+
+void AWeapon::OnRep_MagCapacity()
+{
+	SetHUDMagCapacity();
+}
+
+bool AWeapon::IsEmpty()
+{
+	return Ammo <= 0;
+}
+
 

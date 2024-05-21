@@ -13,6 +13,7 @@
 #include "HUD/CharacterOverlay.h"
 #include "Input/VBInputComponent.h"
 #include "VBComponents/CombatComponent.h"
+#include "Weapon/Weapon.h"
 
 AVBPlayerController::AVBPlayerController()
 {
@@ -91,6 +92,7 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopAim);
 	VBInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AVBPlayerController::Fire);
 	VBInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopFire);
+	VBInputComponent->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AVBPlayerController::DropWeapon);
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -192,6 +194,25 @@ void AVBPlayerController::StopFire(const FInputActionValue& InputActionValue)
 	}
 }
 
+void AVBPlayerController::Reload(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		VBCharacter->GetCombatComponent()->Reload();
+	}
+}
+
+void AVBPlayerController::DropWeapon(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		if(VBCharacter->GetEquippedWeapon())
+		{
+			VBCharacter->DropWeapon();
+		}
+	}
+}
+
 void AVBPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
@@ -230,6 +251,26 @@ void AVBPlayerController::SetHUDDeaths(int32 Deaths)
 	{
 		FString DeathsText = FString::Printf(TEXT("%d"), Deaths);
 		VBHUD->CharacterOverlay->DeathsAmount->SetText(FText::FromString(DeathsText));
+	}
+}
+
+void AVBPlayerController::SetHUDWeaponAmmo(int32 Ammo)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->AmmoAmount)
+	{
+		FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
+		VBHUD->CharacterOverlay->AmmoAmount->SetText(FText::FromString(AmmoText));
+	}
+}
+
+void AVBPlayerController::SetHUDWeaponMagCapacity(int32 MagCapacity)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->MagCapacity)
+	{
+		FString MagCapacityText = FString::Printf(TEXT("%d"), MagCapacity);
+		VBHUD->CharacterOverlay->MagCapacity->SetText(FText::FromString(MagCapacityText));
 	}
 }
 

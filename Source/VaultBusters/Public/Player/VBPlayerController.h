@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "VBPlayerController.generated.h"
 
+class AVBCharacter;
 class AVBHUD;
 class UInputMappingContext;
 class UInputAction;
@@ -27,6 +28,8 @@ public:
 	void SetHUDScore(float Score);
 	void SetHUDKills(int32 Kills);
 	void SetHUDDeaths(int32 Deaths);
+	void SetHUDWeaponAmmo(int32 Ammo);
+	void SetHUDWeaponMagCapacity(int32 MagCapacity);
 
 	FTimerHandle ImpactCrosshairTimerHandle;
 	UFUNCTION(Client, Reliable)
@@ -68,6 +71,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> FireAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> ReloadAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> DropWeaponAction;
+
 	void Move(const FInputActionValue& InputActionValue);
 	void LookUp(const FInputActionValue& InputActionValue);
 	void Turn(const FInputActionValue& InputActionValue);
@@ -79,6 +88,8 @@ private:
 	void StopAim(const FInputActionValue& InputActionValue);
 	void Fire(const FInputActionValue& InputActionValue);
 	void StopFire(const FInputActionValue& InputActionValue);
+	void Reload(const FInputActionValue& InputActionValue);
+	void DropWeapon(const FInputActionValue& InputActionValue);
 
 	void InterpCameraCrouch(float DeltaTime);
 	float BaseZLocation = 145.f;
@@ -87,4 +98,7 @@ private:
 
 	UPROPERTY()
 	AVBHUD* VBHUD;
+
+	UPROPERTY()
+	AVBCharacter* VBOwnerCharacter;
 };

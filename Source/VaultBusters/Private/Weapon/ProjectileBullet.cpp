@@ -3,6 +3,7 @@
 
 #include "Weapon/ProjectileBullet.h"
 
+#include "Character/VBCharacter.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/VBPlayerController.h"
@@ -17,7 +18,10 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		if(OwnerController)
 		{
 			UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
-			OwnerController->ClientSetHUDImpactCrosshair();
+			if(Cast<AVBCharacter>(OtherActor))
+			{
+				OwnerController->ClientSetHUDImpactCrosshair();
+			}
 		}
 	}
 

@@ -27,17 +27,19 @@ public:
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
-	void EquipWeapon(AWeapon* WeaponToEquip);
 
 	UPROPERTY(Replicated)
 	bool bAiming;
-	
-	void SetAiming(bool bIsAiming);
 
+	void EquipWeapon(AWeapon* WeaponToEquip);
+	void DropWeapon();
+	void SetAiming(bool bIsAiming);
 	void FireButtonPressed(bool bPressed);
-	
+	void Reload();
 	bool bIsFiring;
+
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
+	AWeapon* EquippedWeapon;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -64,9 +66,6 @@ private:
 	AVBCharacter* Character;
 	AVBPlayerController* Controller;
 	AVBHUD* HUD;
-
-	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	AWeapon* EquippedWeapon;
 
 	UPROPERTY(EditAnywhere)
 	float BaseWalkSpeed;
@@ -112,4 +111,6 @@ private:
 
 	void StartFireTimer();
 	void FireTimerFinished();
+
+	bool CanFire();
 };

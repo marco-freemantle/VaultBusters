@@ -7,6 +7,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Weapon.generated.h"
 
+class AVBPlayerController;
+class AVBCharacter;
 class ACasing;
 class USphereComponent;
 class UWidgetComponent;
@@ -30,8 +32,11 @@ public:
 	AWeapon();
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void OnRep_Owner() override;
 	void ShowPickupWidget(bool bShowWidget);
 	void SetWeaponState(EWeaponState State);
+	void SetHUDAmmo();
+	void SetHUDMagCapacity();
 	virtual void Fire(const FVector& HitTarget);
 
 	// Textures for weapon crosshairs
@@ -100,9 +105,29 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ACasing> CasingClass;
 
+	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_Ammo)
+	int32 Ammo;
+
+	UFUNCTION()
+	void OnRep_Ammo();
+
+	void SpendRound();
+
+	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_MagCapacity)
+	int32 MagCapacity;
+
+	UFUNCTION()
+	void OnRep_MagCapacity();
+
+	UPROPERTY()
+	AVBCharacter* VBOwnerCharacter;
+	UPROPERTY()
+	AVBPlayerController* VBOwnerController;
+
 public:
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE float GetZoomedFOV() const { return ZoomedFOV; }
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
+	bool IsEmpty();
 };

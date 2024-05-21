@@ -62,6 +62,11 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		
 		SetHUDCrosshairs(DeltaTime);
 		InterpFOV(DeltaTime);
+
+		if(Character->IsLocallyControlled())
+		{
+			GEngine->AddOnScreenDebugMessage(1, 0.f, FColor::Red, FString::Printf(TEXT("Aiming: %s - WalkSpeed: %f"), bAiming ? TEXT("true") : TEXT("false"), Character->GetCharacterMovement()->MaxWalkSpeed));
+		}
 	}
 }
 
@@ -77,7 +82,10 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if(Character == nullptr || WeaponToEquip == nullptr) return;
-	
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->Dropped();
+	}
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket")))
@@ -85,8 +93,35 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
+	EquippedWeapon->SetHUDAmmo();
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+}
+
+// Called on the Server from AVBCharacter
+void UCombatComponent::DropWeapon()
+{
+	if(Character == nullptr) return;
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->Dropped();
+	}
+	Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
+	if(Controller)
+	{
+		Controller->SetHUDWeaponAmmo(0);
+		Controller->SetHUDWeaponMagCapacity(0);
+	}
+	EquippedWeapon = nullptr;
+	SetAiming(false);
+	Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	Character->GetCharacterMovement()->bOrientRotationToMovement = true;
+	Character->bUseControllerRotationYaw = false;
+}
+
+void UCombatComponent::Reload()
+{
+	
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
@@ -100,6 +135,17 @@ void UCombatComponent::OnRep_EquippedWeapon()
 		}
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
+	}
+	if(!EquippedWeapon && Character)
+	{
+		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
+		if(Controller)
+		{
+			Controller->SetHUDWeaponAmmo(0);
+			Controller->SetHUDWeaponMagCapacity(0);
+		}
+		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
+		Character->bUseControllerRotationYaw = false;
 	}
 }
 
@@ -151,7 +197,11 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 void UCombatComponent::TraceFromBarrel(FHitResult& TraceHitResult)
 {
-	if(!EquippedWeapon || bElimmed) return;
+	if(!EquippedWeapon || bElimmed)
+	{
+		InvalidHitActor->SetActorHiddenInGame(true);
+		return;
+	}
 	const USkeletalMeshSocket* MuzzleSocket = EquippedWeapon->GetWeaponMesh()->GetSocketByName(FName("muzzle"));
 	FTransform SocketTransform = MuzzleSocket->GetSocketTransform(EquippedWeapon->GetWeaponMesh());
 
@@ -187,7 +237,7 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 
 void UCombatComponent::Fire()
 {
-	if(bCanFire)
+	if(CanFire())
 	{
 		bCanFire = false;
 		ServerFire(HitTarget);
@@ -232,7 +282,14 @@ void UCombatComponent::FireTimerFinished()
 
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
-	if(!Character || !Character->GetEquippedWeapon()) return;
+	if(!Character) return;
+	if(!EquippedWeapon)
+	{
+		bAiming = false;
+		ServerSetAiming(false);
+		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+		return;
+	}
 	bAiming = bIsAiming;
 	ServerSetAiming(bIsAiming);
 	Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
@@ -249,13 +306,15 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 
 void UCombatComponent::InterpFOV(float DeltaTime)
 {
-	if (EquippedWeapon == nullptr) return;
-
-	if (bAiming)
+	if(!EquippedWeapon) // No weapon
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);
+	}
+	if (bAiming && EquippedWeapon) // Weapon and aiming
 	{
 		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
 	}
-	else
+	else // Weapon and not aiming
 	{
 		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);
 	}
@@ -323,5 +382,11 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 			HUD->SetHUDPackage(HUDPackage);
 		}
 	}
+}
+
+bool UCombatComponent::CanFire()
+{
+	if(EquippedWeapon == nullptr) return false;
+	return !EquippedWeapon->IsEmpty() || !bCanFire;
 }
 

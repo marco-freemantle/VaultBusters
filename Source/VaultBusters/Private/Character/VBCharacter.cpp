@@ -129,6 +129,20 @@ void AVBCharacter::PlayHitReactMontage()
 	}
 }
 
+void AVBCharacter::PlayReloadMontage()
+{
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && ReloadMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		FName SectionName = FName("Rifle");
+		//TODO: Each weapon should have weapon type. Can change section name to play animations for given weapon (rifle, pistol etc)
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
 void AVBCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
 	if(OverlappingWeapon && IsLocallyControlled())
@@ -179,6 +193,30 @@ void AVBCharacter::ServerEquipWeapon_Implementation()
 	}
 }
 
+void AVBCharacter::DropWeapon()
+{
+	if(Combat)
+	{
+		if(HasAuthority())
+		{
+			Combat->DropWeapon();
+		}
+		else
+		{
+			ServerDropWeapon();
+			GetCharacterMovement()->MaxWalkSpeed = Combat->BaseWalkSpeed;
+		}
+	}
+}
+
+void AVBCharacter::ServerDropWeapon_Implementation()
+{
+	if(Combat)
+	{
+		Combat->DropWeapon();
+	}
+}
+
 bool AVBCharacter::IsWeaponEquipped() const
 {
 	return (Combat && Combat->EquippedWeapon);
@@ -201,8 +239,12 @@ void AVBCharacter::Elim()
 
 void AVBCharacter::MulticastElim_Implementation()
 {
+	if(VBPlayerController)
+	{
+		VBPlayerController->SetHUDWeaponAmmo(0);
+		VBPlayerController->SetHUDWeaponMagCapacity(0);
+	}
 	bElimmed = true;
-
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetSimulatePhysics(true);
 
