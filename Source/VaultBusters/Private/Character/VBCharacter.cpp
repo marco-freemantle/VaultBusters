@@ -92,6 +92,8 @@ void AVBCharacter::PollInit()
 		if(VBPlayerState)
 		{
 			VBPlayerState->AddToScore(0.f);
+			VBPlayerState->AddToDeaths(0);
+			VBPlayerState->AddToKills(0);
 		}
 	}
 }
@@ -201,7 +203,7 @@ void AVBCharacter::MulticastElim_Implementation()
 {
 	bElimmed = true;
 
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetSimulatePhysics(true);
 
 	GetCharacterMovement()->DisableMovement();

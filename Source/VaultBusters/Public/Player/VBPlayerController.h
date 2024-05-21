@@ -25,6 +25,16 @@ public:
 
 	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDScore(float Score);
+	void SetHUDKills(int32 Kills);
+	void SetHUDDeaths(int32 Deaths);
+
+	FTimerHandle ImpactCrosshairTimerHandle;
+	UFUNCTION(Client, Reliable)
+	void ClientSetHUDImpactCrosshair();
+
+	FTimerHandle EliminatedTimerHandle;
+	UFUNCTION(Client, Reliable)
+	void ClientSetHUDEliminated(const FString& VictimName);
 
 protected:
 	virtual void BeginPlay() override;
@@ -75,5 +85,6 @@ private:
 	float CrouchedZLocation = 100.f;
 	float CurrentZLocation = 145.f;
 
+	UPROPERTY()
 	AVBHUD* VBHUD;
 };

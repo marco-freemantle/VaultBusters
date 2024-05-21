@@ -17,8 +17,19 @@ class VAULTBUSTERS_API AVBPlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
-	virtual void OnRep_Score() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void AddToScore(float ScoreAmount);
+	void AddToKills(int32 KillsAmount);
+	void AddToDeaths(int32 DeathsAmount);
+
+	virtual void OnRep_Score() override;
+
+	UFUNCTION()
+	virtual void OnRep_Kills();
+
+	UFUNCTION()
+	virtual void OnRep_Deaths();
 
 private:
 	UPROPERTY()
@@ -26,4 +37,11 @@ private:
 
 	UPROPERTY()
 	AVBPlayerController* Controller;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Kills)
+	int32 Kills;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Deaths)
+	int32 Deaths;
 };
+

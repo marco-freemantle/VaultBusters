@@ -77,8 +77,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCombatComponent* Combat;
 
+	UPROPERTY()
 	AVBPlayerController* VBPlayerController;
 
+	UPROPERTY()
 	AVBPlayerState* VBPlayerState;
 
 	UFUNCTION(Server, Reliable)

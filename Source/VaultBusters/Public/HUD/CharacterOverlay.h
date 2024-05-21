@@ -8,6 +8,8 @@
 
 class UTextBlock;
 class UProgressBar;
+class UImage;
+class UBorder;
 /**
  * 
  */
@@ -17,12 +19,22 @@ class VAULTBUSTERS_API UCharacterOverlay : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(meta = (BindWidget))
-	UProgressBar* HealthBar;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* HealthText;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ScoreAmount;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* KillsAmount;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* DeathsAmount;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* ImpactCrosshair;
+
+	UPROPERTY(meta = (BindWidget))
+	UBorder* Eliminated;
 };

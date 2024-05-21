@@ -3,7 +3,9 @@
 #include "Player/VBPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "Character/VBCharacter.h"
-#include "Components/ProgressBar.h"
+#include "Components/Border.h"
+#include "Components/HorizontalBox.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -193,10 +195,9 @@ void AVBPlayerController::StopFire(const FInputActionValue& InputActionValue)
 void AVBPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->HealthBar && VBHUD->CharacterOverlay->HealthText)
+	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->HealthText)
 	{
 		const float HealthPercent = Health / MaxHealth;
-		VBHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
 		FString HealthText = FString::Printf(TEXT("%d"), FMath::CeilToInt(Health));
 		VBHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 	}
@@ -209,5 +210,74 @@ void AVBPlayerController::SetHUDScore(float Score)
 	{
 		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
 		VBHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
+	}
+}
+
+void AVBPlayerController::SetHUDKills(int32 Kills)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->KillsAmount)
+	{
+		FString KillsText = FString::Printf(TEXT("%d"), Kills);
+		VBHUD->CharacterOverlay->KillsAmount->SetText(FText::FromString(KillsText));
+	}
+}
+
+void AVBPlayerController::SetHUDDeaths(int32 Deaths)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->DeathsAmount)
+	{
+		FString DeathsText = FString::Printf(TEXT("%d"), Deaths);
+		VBHUD->CharacterOverlay->DeathsAmount->SetText(FText::FromString(DeathsText));
+	}
+}
+
+void AVBPlayerController::ClientSetHUDImpactCrosshair_Implementation()
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->ImpactCrosshair && IsLocalController())
+	{
+		GetWorldTimerManager().ClearTimer(ImpactCrosshairTimerHandle);
+		VBHUD->CharacterOverlay->ImpactCrosshair->SetVisibility(ESlateVisibility::Visible);
+
+		GetWorldTimerManager().SetTimer(ImpactCrosshairTimerHandle, [this]() {
+			//Set visibility to hidden after 0.75 seconds
+			if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->ImpactCrosshair)
+			{
+				VBHUD->CharacterOverlay->ImpactCrosshair->SetVisibility(ESlateVisibility::Hidden);
+			}
+			}, 0.75f, false);
+	}
+}
+
+void AVBPlayerController::ClientSetHUDEliminated_Implementation(const FString& VictimName)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->Eliminated)
+	{
+		GetWorldTimerManager().ClearTimer(EliminatedTimerHandle);
+
+		UHorizontalBox* Box = Cast<UHorizontalBox>(VBHUD->CharacterOverlay->Eliminated->GetChildAt(0));
+		if (Box)
+		{
+			UTextBlock* VictimNameText = Cast<UTextBlock>(Box->GetChildAt(2));
+			if (VictimNameText)
+			{
+				VictimNameText->SetText(FText::FromString(VictimName));
+			}
+		}
+
+		VBHUD->CharacterOverlay->Eliminated->SetVisibility(ESlateVisibility::Visible);
+
+		GetWorldTimerManager().SetTimer(EliminatedTimerHandle, [this]() {
+			//Set visibility to hidden after 3 second
+			if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->Eliminated)
+			{
+				VBHUD->CharacterOverlay->Eliminated->SetVisibility(ESlateVisibility::Hidden);
+			}
+			}, 3.f, false);
 	}
 }

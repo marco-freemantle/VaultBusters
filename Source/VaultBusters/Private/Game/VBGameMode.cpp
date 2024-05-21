@@ -16,6 +16,14 @@ void AVBGameMode::PlayerEliminated(AVBCharacter* ElimmedCharacter, AVBPlayerCont
 	if(AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
 	{
 		AttackerPlayerState->AddToScore(100.f);
+		AttackerPlayerState->AddToKills(1);
+
+		FString VictimName = VictimController->PlayerState ? VictimController->PlayerState->GetPlayerName() : FString();
+		AttackerController->ClientSetHUDEliminated(VictimName);
+	}
+	if(VictimPlayerState)
+	{
+		VictimPlayerState->AddToDeaths(1);
 	}
 	
 	if(ElimmedCharacter)
