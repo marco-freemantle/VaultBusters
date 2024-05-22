@@ -66,4 +66,6 @@ void UVBAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		LeftHandTransform.SetLocation(OutPosition);
 		LeftHandTransform.SetRotation(FQuat(OutRotation));
 	}
+
+	bUseFABRIK = VBCharacter->GetCombatState() != ECombatState::ECS_Reloading;
 }

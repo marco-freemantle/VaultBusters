@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "HUD/VBHUD.h"
+#include "VBTypes/CombatState.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 80000.f
@@ -35,7 +36,18 @@ public:
 	void DropWeapon();
 	void SetAiming(bool bIsAiming);
 	void FireButtonPressed(bool bPressed);
+	
 	void Reload();
+	
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
+	
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
+
+	void HandleReload();
+	void UpdateAmmoValues();
+	
 	bool bIsFiring;
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
@@ -61,9 +73,6 @@ protected:
 	void Fire();
 
 	void SetHUDCrosshairs(float DeltaTime);
-
-	UFUNCTION(Server, Reliable)
-	void ServerReload();
 
 private:
 	AVBCharacter* Character;
@@ -116,4 +125,10 @@ private:
 	void FireTimerFinished();
 
 	bool CanFire();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	ECombatState CombatState = ECombatState::ECS_Unoccupied;
+
+	UFUNCTION()
+	void OnRep_CombatState();
 };

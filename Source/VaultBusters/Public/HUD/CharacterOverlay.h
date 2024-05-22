@@ -36,7 +36,7 @@ public:
 	UTextBlock* AmmoAmount;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* MagCapacity;
+	UTextBlock* TotalAmmoAmount;
 
 	UPROPERTY(meta = (BindWidget))
 	UImage* ImpactCrosshair;

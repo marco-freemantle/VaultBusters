@@ -242,7 +242,7 @@ void AVBCharacter::MulticastElim_Implementation()
 	if(VBPlayerController)
 	{
 		VBPlayerController->SetHUDWeaponAmmo(0);
-		VBPlayerController->SetHUDWeaponMagCapacity(0);
+		VBPlayerController->SetHUDWeaponTotalAmmo(0);
 	}
 	bElimmed = true;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -375,6 +375,12 @@ AWeapon* AVBCharacter::GetEquippedWeapon() const
 {
 	if(Combat == nullptr) return nullptr;
 	return Combat->EquippedWeapon;
+}
+
+ECombatState AVBCharacter::GetCombatState() const
+{
+	if(Combat == nullptr) return ECombatState::ECS_MAX;
+	return Combat->CombatState;
 }
 
 void AVBCharacter::UpdateHUDHealth()

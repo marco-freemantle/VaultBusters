@@ -61,7 +61,7 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 
 	DOREPLIFETIME(AWeapon, WeaponState);
 	DOREPLIFETIME(AWeapon, Ammo);
-	DOREPLIFETIME(AWeapon, MagCapacity);
+	DOREPLIFETIME(AWeapon, TotalAmmo);
 }
 
 void AWeapon::OnRep_Owner()
@@ -186,12 +186,12 @@ void AWeapon::SetHUDAmmo()
 		if(VBOwnerController)
 		{
 			VBOwnerController->SetHUDWeaponAmmo(Ammo);
-			VBOwnerController->SetHUDWeaponMagCapacity(MagCapacity);
+			VBOwnerController->SetHUDWeaponTotalAmmo(TotalAmmo);
 		}
 	}
 }
 
-void AWeapon::SetHUDMagCapacity()
+void AWeapon::SetHUDTotalAmmo()
 {
 	VBOwnerCharacter = VBOwnerCharacter == nullptr ? Cast<AVBCharacter>(GetOwner()) : VBOwnerCharacter;
 	if(VBOwnerCharacter)
@@ -199,9 +199,16 @@ void AWeapon::SetHUDMagCapacity()
 		VBOwnerController = VBOwnerController == nullptr ? Cast<AVBPlayerController>(VBOwnerCharacter->Controller) : VBOwnerController;
 		if(VBOwnerController)
 		{
-			VBOwnerController->SetHUDWeaponMagCapacity(MagCapacity);
+			VBOwnerController->SetHUDWeaponTotalAmmo(TotalAmmo);
 		}
 	}
+}
+
+void AWeapon::AddAmmo(int32 AmmoToAdd)
+{
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+	TotalAmmo = TotalAmmo - AmmoToAdd;
+	SetHUDAmmo();
 }
 
 void AWeapon::SpendRound()
@@ -215,9 +222,9 @@ void AWeapon::OnRep_Ammo()
 	SetHUDAmmo();
 }
 
-void AWeapon::OnRep_MagCapacity()
+void AWeapon::OnRep_TotalAmmo()
 {
-	SetHUDMagCapacity();
+	SetHUDTotalAmmo();
 }
 
 bool AWeapon::IsEmpty()

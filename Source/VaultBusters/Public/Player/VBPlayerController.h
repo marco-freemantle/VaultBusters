@@ -29,7 +29,7 @@ public:
 	void SetHUDKills(int32 Kills);
 	void SetHUDDeaths(int32 Deaths);
 	void SetHUDWeaponAmmo(int32 Ammo);
-	void SetHUDWeaponMagCapacity(int32 MagCapacity);
+	void SetHUDWeaponTotalAmmo(int32 TotalAmmo);
 
 	FTimerHandle ImpactCrosshairTimerHandle;
 	UFUNCTION(Client, Reliable)

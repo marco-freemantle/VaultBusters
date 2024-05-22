@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "NiagaraFunctionLibrary.h"
+#include "VBTypes/WeaponTypes.h"
 #include "Weapon.generated.h"
 
 class AVBPlayerController;
@@ -36,7 +37,8 @@ public:
 	void ShowPickupWidget(bool bShowWidget);
 	void SetWeaponState(EWeaponState State);
 	void SetHUDAmmo();
-	void SetHUDMagCapacity();
+	void SetHUDTotalAmmo();
+	void AddAmmo(int32 AmmoToAdd);
 	virtual void Fire(const FVector& HitTarget);
 
 	// Textures for weapon crosshairs
@@ -72,7 +74,10 @@ public:
 	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_Ammo)
 	int32 Ammo;
 
-	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_MagCapacity)
+	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_TotalAmmo)
+	int32 TotalAmmo;
+
+	UPROPERTY(EditAnywhere)
 	int32 MagCapacity;
 
 	void Dropped();
@@ -96,6 +101,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties", ReplicatedUsing = OnRep_WeaponState)
 	EWeaponState WeaponState;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	EWeaponType WeaponType;
+
 	UFUNCTION()
 	void OnRep_WeaponState();
 	
@@ -117,7 +125,7 @@ private:
 	void SpendRound();
 
 	UFUNCTION()
-	void OnRep_MagCapacity();
+	void OnRep_TotalAmmo();
 
 	UPROPERTY()
 	AVBCharacter* VBOwnerCharacter;

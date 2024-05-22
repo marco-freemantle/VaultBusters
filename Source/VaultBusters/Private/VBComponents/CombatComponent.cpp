@@ -41,7 +41,10 @@ void UCombatComponent::BeginPlay()
 		if(UWorld* World = GetWorld())
 		{
 			InvalidHitActor = World->SpawnActor<AActor>(InvalidHitActorClass, FVector(), FRotator());
-			InvalidHitActor->SetActorHiddenInGame(true);
+			if(InvalidHitActor)
+			{
+				InvalidHitActor->SetActorHiddenInGame(true);
+			}
 		}
 	}
 }
@@ -71,6 +74,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
+	DOREPLIFETIME(UCombatComponent, CombatState);
 }
 
 // Called on the Server from AVBCharacter
@@ -106,7 +110,7 @@ void UCombatComponent::DropWeapon()
 	if(Controller)
 	{
 		Controller->SetHUDWeaponAmmo(0);
-		Controller->SetHUDWeaponMagCapacity(0);
+		Controller->SetHUDWeaponTotalAmmo(0);
 	}
 	EquippedWeapon = nullptr;
 	SetAiming(false);
@@ -117,8 +121,8 @@ void UCombatComponent::DropWeapon()
 
 void UCombatComponent::Reload()
 {
-	if(!EquippedWeapon) return;;
-	if(EquippedWeapon->MagCapacity > 0)
+	if(!EquippedWeapon) return;
+	if(EquippedWeapon->TotalAmmo > 0 && EquippedWeapon->Ammo < EquippedWeapon->MagCapacity && CombatState != ECombatState::ECS_Reloading)
 	{
 		ServerReload();
 	}
@@ -126,8 +130,61 @@ void UCombatComponent::Reload()
 
 void UCombatComponent::ServerReload_Implementation()
 {
-	if(!Character) return;
+	if(!Character || !EquippedWeapon) return;
+	CombatState = ECombatState::ECS_Reloading;
+	HandleReload();
+}
+
+void UCombatComponent::HandleReload()
+{
 	Character->PlayReloadMontage();
+}
+
+void UCombatComponent::FinishReloading()
+{
+	if(!Character) return;
+	if(Character->HasAuthority())
+	{
+		CombatState = ECombatState::ECS_Unoccupied;
+		UpdateAmmoValues();
+	}
+	if(bIsFiring)
+	{
+		Fire();
+	}
+}
+
+
+void UCombatComponent::UpdateAmmoValues()
+{
+	if (!Character || !EquippedWeapon) return;
+
+	int32 RoomInMag = EquippedWeapon->MagCapacity - EquippedWeapon->Ammo;
+	if(EquippedWeapon->TotalAmmo >= RoomInMag)
+	{
+		EquippedWeapon->AddAmmo(RoomInMag);
+		// Take SpaceInCurrentMag from total ammo and add to Ammo
+	}
+	else
+	{
+		EquippedWeapon->AddAmmo(EquippedWeapon->TotalAmmo);
+	}
+}
+
+void UCombatComponent::OnRep_CombatState()
+{
+	switch (CombatState)
+	{
+	case ECombatState::ECS_Reloading:
+		HandleReload();
+		break;
+	case ECombatState::ECS_Unoccupied:
+		if(bIsFiring)
+		{
+			Fire();
+		}
+		break;
+	}
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
@@ -148,7 +205,7 @@ void UCombatComponent::OnRep_EquippedWeapon()
 		if(Controller)
 		{
 			Controller->SetHUDWeaponAmmo(0);
-			Controller->SetHUDWeaponMagCapacity(0);
+			Controller->SetHUDWeaponTotalAmmo(0);
 		}
 		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
 		Character->bUseControllerRotationYaw = false;
@@ -203,7 +260,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 void UCombatComponent::TraceFromBarrel(FHitResult& TraceHitResult)
 {
-	if(!EquippedWeapon || bElimmed)
+	if((!EquippedWeapon || bElimmed) && InvalidHitActor)
 	{
 		InvalidHitActor->SetActorHiddenInGame(true);
 		return;
@@ -263,7 +320,7 @@ void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& Trac
 void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	if(EquippedWeapon == nullptr) return;
-	if(Character)
+	if(Character && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		Character->PlayFireMontage(bAiming);
 		EquippedWeapon->Fire(TraceHitTarget);
@@ -392,7 +449,7 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 
 bool UCombatComponent::CanFire()
 {
-	if(EquippedWeapon == nullptr) return false;
-	return !EquippedWeapon->IsEmpty() || !bCanFire;
+	if (EquippedWeapon == nullptr) return false;
+	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Unoccupied;
 }
 

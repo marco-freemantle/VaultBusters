@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "VBTypes/TurningInPlace.h"
+#include "VBTypes/CombatState.h"
 #include "VBCharacter.generated.h"
 
 class AVBPlayerState;
@@ -36,19 +37,6 @@ public:
 	void EquipWeapon();
 	void DropWeapon();
 
-	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
-	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
-	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
-	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
-	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-	FORCEINLINE float GetHealth() const { return Health; }
-	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
-	AWeapon* GetEquippedWeapon() const;
-
-	bool IsWeaponEquipped() const;
-	bool IsAiming() const;
-
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim();
 
@@ -76,7 +64,7 @@ private:
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCombatComponent* Combat;
 
 	UPROPERTY()
@@ -127,4 +115,19 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float ElimDelay = 3.f;
+
+public:
+	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
+	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
+	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
+	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
+	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE float GetHealth() const { return Health; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+	AWeapon* GetEquippedWeapon() const;
+	ECombatState GetCombatState() const;
+
+	bool IsWeaponEquipped() const;
+	bool IsAiming() const;
 };

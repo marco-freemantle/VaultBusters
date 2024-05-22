@@ -265,13 +265,13 @@ void AVBPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 	}
 }
 
-void AVBPlayerController::SetHUDWeaponMagCapacity(int32 MagCapacity)
+void AVBPlayerController::SetHUDWeaponTotalAmmo(int32 TotalAmmo)
 {
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->MagCapacity)
+	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->TotalAmmoAmount)
 	{
-		FString MagCapacityText = FString::Printf(TEXT("%d"), MagCapacity);
-		VBHUD->CharacterOverlay->MagCapacity->SetText(FText::FromString(MagCapacityText));
+		FString TotalAmmoText = FString::Printf(TEXT("%d"), TotalAmmo);
+		VBHUD->CharacterOverlay->TotalAmmoAmount->SetText(FText::FromString(TotalAmmoText));
 	}
 }
 
