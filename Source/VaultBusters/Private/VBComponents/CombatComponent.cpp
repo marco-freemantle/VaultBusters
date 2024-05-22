@@ -91,10 +91,44 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	{
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
+	if(EquippedWeapon->EquipSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, EquippedWeapon->EquipSound, EquippedWeapon->GetActorLocation());
+	}
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetHUDAmmo();
+	
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+}
+
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	if(EquippedWeapon && Character)
+	{
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket")))
+		{
+			HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+		}
+		if(EquippedWeapon->EquipSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, EquippedWeapon->EquipSound, EquippedWeapon->GetActorLocation());
+		}
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Character->bUseControllerRotationYaw = true;
+	}
+	if(!EquippedWeapon && Character)
+	{
+		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
+		if(Controller)
+		{
+			Controller->SetHUDWeaponAmmo(0);
+			Controller->SetHUDWeaponTotalAmmo(0);
+		}
+		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
+		Character->bUseControllerRotationYaw = false;
+	}
 }
 
 // Called on the Server from AVBCharacter
@@ -163,7 +197,6 @@ void UCombatComponent::UpdateAmmoValues()
 	if(EquippedWeapon->TotalAmmo >= RoomInMag)
 	{
 		EquippedWeapon->AddAmmo(RoomInMag);
-		// Take SpaceInCurrentMag from total ammo and add to Ammo
 	}
 	else
 	{
@@ -184,31 +217,6 @@ void UCombatComponent::OnRep_CombatState()
 			Fire();
 		}
 		break;
-	}
-}
-
-void UCombatComponent::OnRep_EquippedWeapon()
-{
-	if(EquippedWeapon && Character)
-	{
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket")))
-		{
-			HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
-		}
-		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-		Character->bUseControllerRotationYaw = true;
-	}
-	if(!EquippedWeapon && Character)
-	{
-		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
-		if(Controller)
-		{
-			Controller->SetHUDWeaponAmmo(0);
-			Controller->SetHUDWeaponTotalAmmo(0);
-		}
-		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
-		Character->bUseControllerRotationYaw = false;
 	}
 }
 

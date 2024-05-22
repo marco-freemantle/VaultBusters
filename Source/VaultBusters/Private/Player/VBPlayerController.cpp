@@ -85,7 +85,10 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(LookUpAction, ETriggerEvent::Triggered, this, &AVBPlayerController::LookUp);
 	VBInputComponent->BindAction(TurnAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Turn);
 	VBInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Jump);
-	VBInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Equip);
+	VBInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &AVBPlayerController::Equip);
+	VBInputComponent->BindAction(EquipAction, ETriggerEvent::Completed, this, &AVBPlayerController::SetbCanEquipTrue);
+	VBInputComponent->BindAction(DropWeaponAction, ETriggerEvent::Started, this, &AVBPlayerController::DropWeapon);
+	VBInputComponent->BindAction(DropWeaponAction, ETriggerEvent::Completed, this, &AVBPlayerController::SetbCanDropWeaponTrue);
 	VBInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AVBPlayerController::Crouch);
 	VBInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AVBPlayerController::UnCrouch);
 	VBInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AVBPlayerController::Aim);
@@ -93,7 +96,6 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AVBPlayerController::Fire);
 	VBInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopFire);
 	VBInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Reload);
-	VBInputComponent->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AVBPlayerController::DropWeapon);
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -140,10 +142,25 @@ void AVBPlayerController::Jump(const FInputActionValue& InputActionValue)
 
 void AVBPlayerController::Equip(const FInputActionValue& InputActionValue)
 {
+	if(!bCanEquip) return;
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
 		VBCharacter->EquipWeapon();
 	}
+	bCanEquip = false;
+}
+
+void AVBPlayerController::DropWeapon(const FInputActionValue& InputActionValue)
+{
+	if(!bCanDropWeapon) return;
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		if(VBCharacter->GetEquippedWeapon())
+		{
+			VBCharacter->DropWeapon();
+		}
+	}
+	bCanDropWeapon = false;
 }
 
 void AVBPlayerController::Crouch(const FInputActionValue& InputActionValue)
@@ -203,15 +220,14 @@ void AVBPlayerController::Reload(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AVBPlayerController::DropWeapon(const FInputActionValue& InputActionValue)
+void AVBPlayerController::SetbCanEquipTrue()
 {
-	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
-	{
-		if(VBCharacter->GetEquippedWeapon())
-		{
-			VBCharacter->DropWeapon();
-		}
-	}
+	bCanEquip = true;
+}
+
+void AVBPlayerController::SetbCanDropWeaponTrue()
+{
+	bCanDropWeapon = true;
 }
 
 void AVBPlayerController::SetHUDHealth(float Health, float MaxHealth)

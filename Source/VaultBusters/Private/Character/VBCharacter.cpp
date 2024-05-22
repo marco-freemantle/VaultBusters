@@ -353,7 +353,7 @@ void AVBCharacter::HideCameraIfCharacterClose()
 {
 	if(!IsLocallyControlled()) return;
 
-	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < 200.f)
+	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() <= 200.f)
 	{
 		GetMesh()->SetVisibility(false);
 		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())

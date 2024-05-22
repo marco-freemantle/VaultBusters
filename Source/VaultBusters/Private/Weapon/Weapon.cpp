@@ -19,7 +19,7 @@ AWeapon::AWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
 	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
-	WeaponMesh->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	WeaponMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
@@ -41,6 +41,7 @@ void AWeapon::BeginPlay()
 		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
 		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
+		WeaponMesh->OnComponentHit.AddDynamic(this, &AWeapon::OnHit);
 	}
 	
 	if(PickupWidget)
@@ -52,7 +53,6 @@ void AWeapon::BeginPlay()
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -96,6 +96,16 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	}
 }
 
+void AWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	if(bCanPlayHitFloorSound)
+	{
+		MulticastPlayHitFloorSound();
+	}
+	bCanPlayHitFloorSound = false;
+}
+
 void AWeapon::SetWeaponState(EWeaponState State)
 {
 	WeaponState = State;
@@ -107,6 +117,11 @@ void AWeapon::SetWeaponState(EWeaponState State)
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetEnableGravity(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if(EquipSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation());
+		}
+		bCanPlayHitFloorSound = true;
 		break;
 	case EWeaponState::EWS_Dropped:
 		if(HasAuthority())
@@ -116,6 +131,10 @@ void AWeapon::SetWeaponState(EWeaponState State)
 		WeaponMesh->SetSimulatePhysics(true);
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		if(DropSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, DropSound, GetActorLocation());
+		}
 		break;
 	}
 }
@@ -134,6 +153,10 @@ void AWeapon::OnRep_WeaponState()
 		WeaponMesh->SetSimulatePhysics(true);
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		if(DropSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, DropSound, GetActorLocation());
+		}
 		break;
 	}
 }
@@ -225,6 +248,14 @@ void AWeapon::OnRep_Ammo()
 void AWeapon::OnRep_TotalAmmo()
 {
 	SetHUDTotalAmmo();
+}
+
+void AWeapon::MulticastPlayHitFloorSound_Implementation()
+{
+	if(HitFloorSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HitFloorSound, GetActorLocation());
+	}
 }
 
 bool AWeapon::IsEmpty()

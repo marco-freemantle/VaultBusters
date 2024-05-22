@@ -34,6 +34,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void OnRep_Owner() override;
+
+	UPROPERTY(BlueprintReadOnly)
+	AVBCharacter* VBOwnerCharacter;
+	UPROPERTY()
+	AVBPlayerController* VBOwnerController;
+
+	
 	void ShowPickupWidget(bool bShowWidget);
 	void SetWeaponState(EWeaponState State);
 	void SetHUDAmmo();
@@ -81,15 +88,27 @@ public:
 	int32 MagCapacity;
 
 	void Dropped();
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* EquipSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* DropSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* HitFloorSound;
 	
 protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
+	
 	UFUNCTION()
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
@@ -127,13 +146,15 @@ private:
 	UFUNCTION()
 	void OnRep_TotalAmmo();
 
-	UPROPERTY()
-	AVBCharacter* VBOwnerCharacter;
-	UPROPERTY()
-	AVBPlayerController* VBOwnerController;
+	bool bCanPlayHitFloorSound = true;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayHitFloorSound();
 
 public:
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
+
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE float GetZoomedFOV() const { return ZoomedFOV; }
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }

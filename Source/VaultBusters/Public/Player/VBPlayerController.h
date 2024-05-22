@@ -91,6 +91,12 @@ private:
 	void Reload(const FInputActionValue& InputActionValue);
 	void DropWeapon(const FInputActionValue& InputActionValue);
 
+	bool bCanEquip = true;
+	bool bCanDropWeapon = true;
+
+	void SetbCanEquipTrue();
+	void SetbCanDropWeaponTrue();
+
 	void InterpCameraCrouch(float DeltaTime);
 	float BaseZLocation = 145.f;
 	float CrouchedZLocation = 100.f;
