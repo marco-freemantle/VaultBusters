@@ -60,7 +60,7 @@ protected:
 	void ServerSetAiming(bool bIsAiming);
 
 	UFUNCTION()
-	void OnRep_EquippedWeapon();
+	void OnRep_EquippedWeapon(const AWeapon* OldWeapon);
 
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector_NetQuantize& TraceHitTarget);

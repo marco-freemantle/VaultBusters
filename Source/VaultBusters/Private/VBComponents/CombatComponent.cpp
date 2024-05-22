@@ -102,7 +102,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	Character->bUseControllerRotationYaw = true;
 }
 
-void UCombatComponent::OnRep_EquippedWeapon()
+void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 {
 	if(EquippedWeapon && Character)
 	{
@@ -120,6 +120,10 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	}
 	if(!EquippedWeapon && Character)
 	{
+		if(OldWeapon && Character->IsLocallyControlled())
+		{
+			OldWeapon->GetWeaponMesh()->SetVisibility(true);
+		}
 		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 		if(Controller)
 		{
