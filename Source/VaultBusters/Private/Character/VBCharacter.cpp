@@ -367,7 +367,6 @@ void AVBCharacter::HideCameraIfCharacterClose()
 		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
 		{
 			Combat->EquippedWeapon->GetWeaponMesh()->SetVisibility(true);
-			//Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
 		}
 	}
 }
