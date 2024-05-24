@@ -14,6 +14,7 @@ class AVBHUD;
 class AVBPlayerController;
 class AWeapon;
 class AVBCharacter;
+class UCameraShakeBase;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class VAULTBUSTERS_API UCombatComponent : public UActorComponent
@@ -97,6 +98,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> InvalidHitActorClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 
 	UPROPERTY()
 	AActor* InvalidHitActor;

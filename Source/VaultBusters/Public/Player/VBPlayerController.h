@@ -30,6 +30,32 @@ public:
 	void SetHUDDeaths(int32 Deaths);
 	void SetHUDWeaponAmmo(int32 Ammo);
 	void SetHUDWeaponTotalAmmo(int32 TotalAmmo);
+	void SetHUDMatchCountDown(float CountDownTime);
+
+	virtual float GetServerTime(); //Synced with server world clock
+	virtual void ReceivedPlayer() override; //Sync with server clock as soon as possible
+
+	void SetHUDTime();
+
+	/*
+	Sync time between client and server
+	*/
+	//Requests the current server time, passing in the client's time when the request was sent
+	UFUNCTION(Server, Reliable)
+	void ServerRequestServerTime(float TimeOfClientRequest);
+
+	//Reports the current server time to the client in response to the ServerRequestServerTime
+	UFUNCTION(Client, Reliable)
+	void ClientReportServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);
+
+	//Difference between client and server time
+	float ClientServerDelta = 0.f;
+
+	UPROPERTY(EditAnywhere, Category = Time)
+	float TimeSyncFrequency = 5.f;
+
+	float TimeSyncRunningTime = 0.f;
+	void CheckTimeSync(float DeltaTime);
 
 	FTimerHandle ImpactCrosshairTimerHandle;
 	UFUNCTION(Client, Reliable)
@@ -107,4 +133,7 @@ private:
 
 	UPROPERTY()
 	AVBCharacter* VBOwnerCharacter;
+
+	float MatchTime = 120.f;
+	uint32 CountDownInt = 0;
 };

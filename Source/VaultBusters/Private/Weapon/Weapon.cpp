@@ -175,7 +175,13 @@ void AWeapon::Fire(const FVector& HitTarget)
 			FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(WeaponMesh);
 			if(UWorld* World = GetWorld())
 			{
-				World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
+				FRotator ExistingRotation = SocketTransform.GetRotation().Rotator();
+				
+				float RandomPitchOffset = FMath::FRandRange(-30.0f, 30.0f);
+				FRotator RandomisedRotation = ExistingRotation;
+				RandomisedRotation.Pitch += RandomPitchOffset;
+				
+				World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), RandomisedRotation);
 			}
 		}
 	}

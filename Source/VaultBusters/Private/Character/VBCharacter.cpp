@@ -1,6 +1,8 @@
 // Copyright Marco Freemantle
 
 #include "Character/VBCharacter.h"
+
+#include "Animation/AnimNotifies/AnimNotify_PlaySound.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -197,9 +199,11 @@ void AVBCharacter::DropWeapon()
 {
 	if(Combat)
 	{
+		StopAnimMontage(ReloadMontage);
 		if(HasAuthority())
 		{
 			Combat->DropWeapon();
+			MulticastInterruptReload();
 		}
 		else
 		{
@@ -214,7 +218,14 @@ void AVBCharacter::ServerDropWeapon_Implementation()
 	if(Combat)
 	{
 		Combat->DropWeapon();
+		StopAnimMontage(ReloadMontage);
 	}
+}
+
+void AVBCharacter::MulticastInterruptReload_Implementation()
+{
+	if(!ReloadMontage) return;
+	StopAnimMontage(ReloadMontage);
 }
 
 bool AVBCharacter::IsWeaponEquipped() const

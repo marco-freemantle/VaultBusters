@@ -43,4 +43,7 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UBorder* Eliminated;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MatchCountDownText;
 };

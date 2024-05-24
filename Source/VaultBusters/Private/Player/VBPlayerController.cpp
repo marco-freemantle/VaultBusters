@@ -25,6 +25,19 @@ void AVBPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	InterpCameraCrouch(DeltaTime);
+
+	SetHUDTime();
+	CheckTimeSync(DeltaTime);
+}
+
+void AVBPlayerController::CheckTimeSync(float DeltaTime)
+{
+	TimeSyncRunningTime += DeltaTime;
+	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
+	{
+		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+		TimeSyncRunningTime = 0.f;
+	}
 }
 
 void AVBPlayerController::BeginPlay()
@@ -291,10 +304,66 @@ void AVBPlayerController::SetHUDWeaponTotalAmmo(int32 TotalAmmo)
 	}
 }
 
+void AVBPlayerController::SetHUDMatchCountDown(float CountDownTime)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->MatchCountDownText)
+	{
+		int32 Minutes = FMath::FloorToInt(CountDownTime / 60.f);
+		int32 Seconds = CountDownTime - Minutes * 60;
+
+		FString CountDownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		VBHUD->CharacterOverlay->MatchCountDownText->SetText(FText::FromString(CountDownText));
+	}
+}
+
+void AVBPlayerController::SetHUDTime()
+{
+	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
+
+	if (CountDownInt != SecondsLeft)
+	{
+		SetHUDMatchCountDown(MatchTime - GetServerTime());
+	}
+
+	CountDownInt = SecondsLeft;
+}
+
+void AVBPlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)
+{
+	float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();
+	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfReceipt);
+}
+
+void AVBPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)
+{
+	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
+	float CurrentServerTime = TimeServerReceivedClientRequest + (0.5f * RoundTripTime);
+	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
+}
+
+float AVBPlayerController::GetServerTime()
+{
+	if (HasAuthority())
+	{
+		return  GetWorld()->GetTimeSeconds();
+	}
+	return  GetWorld()->GetTimeSeconds() + ClientServerDelta;
+}
+
+void AVBPlayerController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+
+	if (IsLocalController())
+	{
+		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+	}
+}
+
 void AVBPlayerController::ClientSetHUDImpactCrosshair_Implementation()
 {
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-
 	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->ImpactCrosshair && IsLocalController())
 	{
 		GetWorldTimerManager().ClearTimer(ImpactCrosshairTimerHandle);

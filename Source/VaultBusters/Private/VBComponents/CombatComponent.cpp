@@ -97,6 +97,10 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	}
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetHUDAmmo();
+	if(EquippedWeapon->IsEmpty())
+	{
+		Reload();
+	}
 	
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
@@ -143,6 +147,7 @@ void UCombatComponent::DropWeapon()
 	{
 		EquippedWeapon->Dropped();
 		EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetFollowCamera()->GetForwardVector() * 600.f, FName(), true);
+		CombatState = ECombatState::ECS_Unoccupied;
 	}
 	Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 	if(Controller)
@@ -321,6 +326,11 @@ void UCombatComponent::Fire()
 			CrosshairShootingFactor = 0.75f;
 		}
 		StartFireTimer();
+		if(Character)
+		{
+			APlayerCameraManager* CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+			CameraManager->StartCameraShake(CameraShakeClass);
+		}
 	}
 }
 
@@ -352,6 +362,10 @@ void UCombatComponent::FireTimerFinished()
 	if(bIsFiring && EquippedWeapon->bAutomatic)
 	{
 		Fire();
+	}
+	if(EquippedWeapon->IsEmpty())
+	{
+		Reload();
 	}
 }
 
