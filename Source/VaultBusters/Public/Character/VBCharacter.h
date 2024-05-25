@@ -40,6 +40,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayHitReceived(bool bWasHeadShot);
+
 	void Elim();
 
 protected:
@@ -118,6 +121,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float ElimDelay = 3.f;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* HitReceivedSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* HeadshotReceivedSound;
 
 public:
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }

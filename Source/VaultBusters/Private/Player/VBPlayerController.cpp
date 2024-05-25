@@ -12,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "HUD/CharacterOverlay.h"
 #include "Input/VBInputComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "VBComponents/CombatComponent.h"
 #include "Weapon/Weapon.h"
 
@@ -406,5 +407,21 @@ void AVBPlayerController::ClientSetHUDEliminated_Implementation(const FString& V
 				VBHUD->CharacterOverlay->Eliminated->SetVisibility(ESlateVisibility::Hidden);
 			}
 			}, 3.f, false);
+	}
+}
+
+void AVBPlayerController::ClientPlayHitGiven_Implementation()
+{
+	if(HitGivenSound)
+	{
+		UGameplayStatics::PlaySound2D(this, HitGivenSound);
+	}
+}
+
+void AVBPlayerController::ClientPlayHeadshotGiven_Implementation()
+{
+	if(HeadshotGivenSound)
+	{
+		UGameplayStatics::PlaySound2D(this, HeadshotGivenSound);
 	}
 }

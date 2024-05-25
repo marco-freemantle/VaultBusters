@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Game/VBGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/VBPlayerController.h"
@@ -327,6 +328,7 @@ void AVBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();
 	PlayHitReactMontage();
+	MulticastPlayHitReceived(false);
 
 	if(Health != 0.f) return;
 	AVBGameMode* VBGameMode = GetWorld()->GetAuthGameMode<AVBGameMode>();
@@ -335,6 +337,20 @@ void AVBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 		VBPlayerController = VBPlayerController == nullptr ? Cast<AVBPlayerController>(Controller) : VBPlayerController;
 		AVBPlayerController* AttackerController = Cast<AVBPlayerController>(InstigatorController);
 		VBGameMode->PlayerEliminated(this, VBPlayerController, AttackerController);
+	}
+}
+
+void AVBCharacter::MulticastPlayHitReceived_Implementation(bool bWasHeadShot)
+{
+	if(bWasHeadShot)
+	{
+		if(!HeadshotReceivedSound) return;
+		UGameplayStatics::PlaySoundAtLocation(this, HeadshotReceivedSound, GetActorLocation());
+	}
+	else
+	{
+		if(!HitReceivedSound) return;
+		UGameplayStatics::PlaySoundAtLocation(this, HitReceivedSound, GetActorLocation());
 	}
 }
 

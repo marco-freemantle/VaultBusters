@@ -282,6 +282,7 @@ void UCombatComponent::TraceFromBarrel(FHitResult& TraceHitResult)
 		InvalidHitActor->SetActorHiddenInGame(true);
 		return;
 	}
+	if(!EquippedWeapon || InvalidHitActor) return;
 	const USkeletalMeshSocket* MuzzleSocket = EquippedWeapon->GetWeaponMesh()->GetSocketByName(FName("muzzle"));
 	FTransform SocketTransform = MuzzleSocket->GetSocketTransform(EquippedWeapon->GetWeaponMesh());
 

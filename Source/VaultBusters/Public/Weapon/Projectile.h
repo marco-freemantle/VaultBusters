@@ -29,6 +29,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float Damage = 20.f;
 
+	bool bHitFlesh;
+
+	bool bHasHitSomething;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayHitEffects(bool bFleshHit);
+
+	void DelayedDestroy();
+
 private:
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* CollisionBox;
@@ -44,4 +53,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* ImpactSound;
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* BloodImpactParticles;
 };

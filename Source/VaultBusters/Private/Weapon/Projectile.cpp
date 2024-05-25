@@ -26,38 +26,53 @@ AProjectile::AProjectile()
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
 
-void AProjectile::BeginPlay()
+//Only called on the server
+void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::BeginPlay();
+	//Bool stops OnHit being registered serveral times
+	if (bHasHitSomething) return;
 
-	if(HasAuthority())
+	AVBCharacter* PlayerHit = Cast<AVBCharacter>(OtherActor);
+
+	bHitFlesh = PlayerHit != nullptr;
+
+	MulticastPlayHitEffects(bHitFlesh);
+
+	FTimerHandle DestroyTimerHandle;
+	GetWorldTimerManager().SetTimer(DestroyTimerHandle, this, &ThisClass::DelayedDestroy, 0.05f, false);
+
+	bHasHitSomething = true;
+}
+
+void AProjectile::MulticastPlayHitEffects_Implementation(bool bFleshHit)
+{
+	if (bFleshHit)
 	{
-		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+		if (BloodImpactParticles)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodImpactParticles, GetActorLocation());
+		}
 	}
-
-	if(ProjectileTracer)
+	else
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAttached(ProjectileTracer, GetRootComponent(), FName(), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, false);
+		if(ImpactParticles)
+		{
+			FTransform ParticleTransform;
+			
+			ParticleTransform.SetRotation(FQuat(FRotator(90, 90, 90)));
+			
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactParticles, GetActorLocation(), ParticleTransform.Rotator(), FVector(0.5f));
+		}
+		if(ImpactSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+		}
 	}
 }
 
-void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+void AProjectile::DelayedDestroy()
 {
 	Destroy();
-}
-
-void AProjectile::Destroyed()
-{
-	Super::Destroyed();
-	if(ImpactParticles)
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactParticles, GetActorLocation());
-	}
-	if(ImpactSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
-	}
 }
 
 void AProjectile::Tick(float DeltaTime)

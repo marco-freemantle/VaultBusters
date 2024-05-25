@@ -64,6 +64,12 @@ public:
 	FTimerHandle EliminatedTimerHandle;
 	UFUNCTION(Client, Reliable)
 	void ClientSetHUDEliminated(const FString& VictimName);
+	
+	UFUNCTION(Client, Unreliable)
+	void ClientPlayHitGiven();
+
+	UFUNCTION(Client, Unreliable)
+	void ClientPlayHeadshotGiven();
 
 protected:
 	virtual void BeginPlay() override;
@@ -136,4 +142,10 @@ private:
 
 	float MatchTime = 120.f;
 	uint32 CountDownInt = 0;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* HitGivenSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* HeadshotGivenSound;
 };

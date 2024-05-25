@@ -21,6 +21,9 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 			if(Cast<AVBCharacter>(OtherActor))
 			{
 				OwnerController->ClientSetHUDImpactCrosshair();
+				OwnerController->ClientPlayHitGiven();
+
+				//TODO: Play headshot given sound for local player
 			}
 		}
 	}
