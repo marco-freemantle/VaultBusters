@@ -2,11 +2,14 @@
 
 #include "Player/VBPlayerController.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/WidgetTree.h"
 #include "Character/VBCharacter.h"
 #include "Components/Border.h"
 #include "Components/HorizontalBox.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Components/VerticalBox.h"
+#include "Game/VBGameUserSettings.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -133,7 +136,10 @@ void AVBPlayerController::LookUp(const FInputActionValue& InputActionValue)
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	if (APawn* ControlledPawn = GetPawn<APawn>())
 	{
-		ControlledPawn->AddControllerPitchInput(InputAxisVector.X);
+		if(UVBGameUserSettings* UserSettings = Cast<UVBGameUserSettings>(UGameUserSettings::GetGameUserSettings()))
+		{
+			ControlledPawn->AddControllerPitchInput(InputAxisVector.X * UserSettings->GetMouseSensitivity());
+		}
 	}
 }
 
@@ -142,7 +148,10 @@ void AVBPlayerController::Turn(const FInputActionValue& InputActionValue)
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	if (APawn* ControlledPawn = GetPawn<APawn>())
 	{
-		ControlledPawn->AddControllerYawInput(InputAxisVector.X);
+		if(UVBGameUserSettings* UserSettings = Cast<UVBGameUserSettings>(UGameUserSettings::GetGameUserSettings()))
+		{
+			ControlledPawn->AddControllerYawInput(InputAxisVector.X * UserSettings->GetMouseSensitivity());
+		}
 	}
 }
 
@@ -407,6 +416,37 @@ void AVBPlayerController::ClientSetHUDEliminated_Implementation(const FString& V
 				VBHUD->CharacterOverlay->Eliminated->SetVisibility(ESlateVisibility::Hidden);
 			}
 			}, 3.f, false);
+	}
+}
+
+void AVBPlayerController::ClientSetHUDKillFeeds_Implementation(const FString& VictimName, const FString& AttackerName)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->Killfeeds)
+	{
+		if (KillFeedItemClass)
+		{
+			//Create an instance of the Widget Blueprint
+			UUserWidget* KillFeedItemWidget = CreateWidget<UUserWidget>(this, KillFeedItemClass);
+			if (UWidgetTree* WidgetTree = KillFeedItemWidget->WidgetTree)
+			{
+				UTextBlock* AttackerTextBlock = WidgetTree->FindWidget<UTextBlock>(TEXT("AttackerText"));
+				UTextBlock* VictimTextBlock = WidgetTree->FindWidget<UTextBlock>(TEXT("VictimText"));
+				if (AttackerTextBlock && VictimTextBlock)
+				{
+					AttackerTextBlock->SetText(FText::FromString(AttackerName));
+					VictimTextBlock->SetText(FText::FromString(VictimName));
+					VBHUD->CharacterOverlay->Killfeeds->AddChildToVerticalBox(KillFeedItemWidget);
+
+					FTimerHandle DestroyKillFeedItemTimerHandle;
+					GetWorldTimerManager().SetTimer(DestroyKillFeedItemTimerHandle, [KillFeedItemWidget]() {
+						//Destroy widget after 5 seconds
+						KillFeedItemWidget->RemoveFromParent();
+						}, 4.f, false);
+				}
+			}
+		}
 	}
 }
 

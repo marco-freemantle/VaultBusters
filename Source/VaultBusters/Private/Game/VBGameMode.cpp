@@ -18,8 +18,21 @@ void AVBGameMode::PlayerEliminated(AVBCharacter* ElimmedCharacter, AVBPlayerCont
 		AttackerPlayerState->AddToScore(100.f);
 		AttackerPlayerState->AddToKills(1);
 
-		FString VictimName = VictimController->PlayerState ? VictimController->PlayerState->GetPlayerName() : FString();
-		AttackerController->ClientSetHUDEliminated(VictimName);
+		FString VictimSteamName = VictimController->PlayerState ? VictimController->PlayerState->GetPlayerName() : FString();
+		FString AttackerSteamName = AttackerController->PlayerState ? AttackerController->PlayerState->GetPlayerName() : FString();
+		AttackerController->ClientSetHUDEliminated(VictimSteamName);
+
+		//Get all player controllers and update KillFeed
+		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+		{
+			if (APlayerController* PlayerController = It->Get())
+			{
+				if (AVBPlayerController* IndexedController = Cast<AVBPlayerController>(PlayerController))
+				{
+					IndexedController->ClientSetHUDKillFeeds(VictimSteamName, AttackerSteamName);
+				}
+			}
+		}
 	}
 	if(VictimPlayerState)
 	{

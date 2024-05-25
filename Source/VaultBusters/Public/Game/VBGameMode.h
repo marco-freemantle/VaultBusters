@@ -18,4 +18,8 @@ class VAULTBUSTERS_API AVBGameMode : public AGameMode
 public:
 	virtual void PlayerEliminated(AVBCharacter* ElimmedCharacter, AVBPlayerController* VictimController, AVBPlayerController* AttackerController);
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
+
+protected:
+	UPROPERTY(BlueprintReadWrite)
+	TArray<AVBPlayerController*> ConnectedControllers;
 };

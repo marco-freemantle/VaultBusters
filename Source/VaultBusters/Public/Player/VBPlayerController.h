@@ -71,6 +71,9 @@ public:
 	UFUNCTION(Client, Unreliable)
 	void ClientPlayHeadshotGiven();
 
+	UFUNCTION(Client, Reliable)
+	void ClientSetHUDKillFeeds(const FString& VictimName, const FString& AttackerName);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -142,6 +145,9 @@ private:
 
 	float MatchTime = 120.f;
 	uint32 CountDownInt = 0;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> KillFeedItemClass;
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* HitGivenSound;

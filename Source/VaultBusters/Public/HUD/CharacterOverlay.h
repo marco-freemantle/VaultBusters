@@ -10,6 +10,7 @@ class UTextBlock;
 class UProgressBar;
 class UImage;
 class UBorder;
+class UVerticalBox;
 /**
  * 
  */
@@ -46,4 +47,7 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MatchCountDownText;
+	
+	UPROPERTY(meta = (BindWidget))
+	UVerticalBox* Killfeeds;
 };
