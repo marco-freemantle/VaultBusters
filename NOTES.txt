@@ -1,1 +1,7 @@
-- Maybe turn off raytracing in project settings if getting grainy shadows
+For steam:
+- DefaultPlatformService=Steam
+- Use Lan should be false in OnlineGameInstance BP and WBP_Rooms
+
+For local:
+- DefaultPlatformService=NULL
+- Use Lan should be true in OnlineGameInstance BP and WBP_Rooms

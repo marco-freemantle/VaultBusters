@@ -26,10 +26,25 @@ AProjectile::AProjectile()
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
 
-//Only called on the server
+void AProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if(HasAuthority())
+	{
+		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	}
+
+	if(ProjectileTracer)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(ProjectileTracer, GetRootComponent(), FName(), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, false);
+	}
+}
+
+// Only called on the server
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	//Bool stops OnHit being registered serveral times
+	// Bool stops OnHit being registered several times
 	if (bHasHitSomething) return;
 
 	AVBCharacter* PlayerHit = Cast<AVBCharacter>(OtherActor);
