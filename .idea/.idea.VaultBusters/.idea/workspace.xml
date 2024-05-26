@@ -13,29 +13,38 @@
     <list default="true" id="a5dcea6c-be5f-458b-b394-3f57cc1632cc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/ScreenTitle/WBP_CreateRoom.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/ScreenTitle/WBP_CreateRoom.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/ScreenTitle/WBP_TitlePlay.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/ScreenTitle/WBP_TitlePlay.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/ScreenTitle/WBP_TitlePlay.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/ScreenTitle/WBP_TitleSettings.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/ScreenTitle/WBP_TitleTab.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/WBP_ScreenTitle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/FPS_HUD/Blueprints/Widgets/WBP_ScreenTitle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_OnlineGameInstance.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_OnlineGameInstance.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/BP_InvalidHitActor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/BP_VBHUD.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/PlayerCard.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/SessionResult_UI.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_CharacterOverlay.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_InGameMenu.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_InvalidHit.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_KillFeedItem.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_LobbyClientScreen.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_LobbyHostScreen.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_MainMenu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_MainMenu.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_PickupWidget.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_Rooms.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBLobbyController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBLobbyController.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBPlayerController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBPlayerController.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/AssaultRifle/BP_AssaultRifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/AssaultRifle/BP_AssaultRifle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/AssaultRifle/BP_AssaultRifleCopy.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/AssaultRifle/BP_AssaultRifleCopy.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Maps/BankMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/BankMap.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/MainMenu.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/MainMenu.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/TestMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/Lob.umap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/LobbyController.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/LobbyGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/LobbyGameMode.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/LobbyMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/LobbyMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/MainMenuGameMode.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/MapDataStructure.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/MapDataTable.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/MasterSoundMixClass.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/OnlineGameInstance.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/OnlineGameInstance.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/PlayerCard.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/PlayerInfoSaveData.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/PlayerInfoStruct.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/SessionResult_UI.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/WBP_LobbyClientScreen.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/WBP_LobbyHostScreen.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/WBP_MainMenu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/WBP_MainMenu.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/WBP_Rooms.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Maps/TutorialMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/TutorialMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/LobbyGameMode.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/LobbyMap.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/OnlineGameInstance.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/OnlineMenuSubsystem/WBP_MainMenu.uasset" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +67,15 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../OperationS/Source/OperationS/Misc/SGameUserSettings.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBAnimInstance.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -279,6 +297,9 @@
       <workItem from="1716637322291" duration="2118000" />
       <workItem from="1716639914033" duration="2167000" />
       <workItem from="1716646041045" duration="639000" />
+      <workItem from="1716646714860" duration="199000" />
+      <workItem from="1716646957426" duration="639000" />
+      <workItem from="1716719522053" duration="746000" />
     </task>
     <servers />
   </component>
