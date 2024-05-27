@@ -43,5 +43,9 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_Deaths)
 	int32 Deaths;
+
+public:
+	FORCEINLINE int32 GetKills() const { return Kills; }
+	FORCEINLINE int32 GetDeaths() const { return Deaths; }
 };
 

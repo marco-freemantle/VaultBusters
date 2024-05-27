@@ -3,7 +3,9 @@
 
 #include "HUD/VBHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "HUD/Announcement.h"
 #include "HUD/CharacterOverlay.h"
+#include "HUD/Scoreboard.h"
 
 void AVBHUD::DrawHUD()
 {
@@ -48,8 +50,6 @@ void AVBHUD::DrawHUD()
 void AVBHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AddCharacterOverlay();
 }
 
 void AVBHUD::AddCharacterOverlay()
@@ -59,6 +59,28 @@ void AVBHUD::AddCharacterOverlay()
 	{
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
 		CharacterOverlay->AddToViewport();
+	}
+}
+
+void AVBHUD::AddScoreboard()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+
+	if (PlayerController && CharacterScoreboardClass)
+	{
+		Scoreboard = CreateWidget<UScoreboard>(PlayerController, CharacterScoreboardClass);
+		Scoreboard->AddToViewport();
+		Scoreboard->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void AVBHUD::AddAnnouncement()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if(PlayerController && AnnouncementClass && Announcement == nullptr)
+	{
+		Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
+		Announcement->AddToViewport();
 	}
 }
 

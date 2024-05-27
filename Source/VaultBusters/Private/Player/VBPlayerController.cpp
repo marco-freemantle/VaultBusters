@@ -9,13 +9,18 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Game/VBGameMode.h"
 #include "Game/VBGameUserSettings.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/GameMode.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "HUD/Announcement.h"
 #include "HUD/CharacterOverlay.h"
+#include "HUD/Scoreboard.h"
 #include "Input/VBInputComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "VBComponents/CombatComponent.h"
 #include "Weapon/Weapon.h"
 
@@ -32,6 +37,7 @@ void AVBPlayerController::PlayerTick(float DeltaTime)
 
 	SetHUDTime();
 	CheckTimeSync(DeltaTime);
+	PollInit();
 }
 
 void AVBPlayerController::CheckTimeSync(float DeltaTime)
@@ -47,6 +53,7 @@ void AVBPlayerController::CheckTimeSync(float DeltaTime)
 void AVBPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	check(VBContext);
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
@@ -59,8 +66,9 @@ void AVBPlayerController::BeginPlay()
 
 	FInputModeGameOnly InputModeData;
 	SetInputMode(InputModeData);
-
+	
 	VBHUD = Cast<AVBHUD>(GetHUD());
+	ServerCheckMatchState();
 }
 
 void AVBPlayerController::OnPossess(APawn* InPawn)
@@ -72,6 +80,13 @@ void AVBPlayerController::OnPossess(APawn* InPawn)
 	{
 		SetHUDHealth(VBCharacter->GetHealth(), VBCharacter->GetMaxHealth());
 	}
+}
+
+void AVBPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AVBPlayerController, MatchState);
 }
 
 void AVBPlayerController::InterpCameraCrouch(float DeltaTime)
@@ -113,6 +128,26 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AVBPlayerController::Fire);
 	VBInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AVBPlayerController::StopFire);
 	VBInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Reload);
+	VBInputComponent->BindAction(ShowScoreboardAction, ETriggerEvent::Started, this, &AVBPlayerController::ToggleScoreboard);
+	VBInputComponent->BindAction(ShowScoreboardAction, ETriggerEvent::Completed, this, &AVBPlayerController::ToggleScoreboard);
+}
+
+void AVBPlayerController::PollInit()
+{
+	if(CharacterOverlay == nullptr)
+	{
+		if(VBHUD && VBHUD->CharacterOverlay)
+		{
+			CharacterOverlay = VBHUD->CharacterOverlay;
+			if(CharacterOverlay)
+			{
+				SetHUDHealth(HUDHealth, HUDMaxHealth);
+				SetHUDScore(HUDScore);
+				SetHUDDeaths(HUDDeaths);
+				SetHUDKills(HUDKills);
+			}
+		}
+	}
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -184,6 +219,25 @@ void AVBPlayerController::DropWeapon(const FInputActionValue& InputActionValue)
 		}
 	}
 	bCanDropWeapon = false;
+}
+
+void AVBPlayerController::ToggleScoreboard()
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+
+	if (VBHUD && VBHUD->Scoreboard && bCanToggleScoreboard)
+	{
+		bIsScoreboardOpen = !bIsScoreboardOpen;
+
+		if (bIsScoreboardOpen)
+		{
+			VBHUD->Scoreboard->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			VBHUD->Scoreboard->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
 }
 
 void AVBPlayerController::Crouch(const FInputActionValue& InputActionValue)
@@ -262,6 +316,12 @@ void AVBPlayerController::SetHUDHealth(float Health, float MaxHealth)
 		FString HealthText = FString::Printf(TEXT("%d"), FMath::CeilToInt(Health));
 		VBHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 	}
+	else
+	{
+		bInitialiseCharacterOverlay = true;
+		HUDHealth = Health;
+		HUDMaxHealth = MaxHealth;
+	}
 }
 
 void AVBPlayerController::SetHUDScore(float Score)
@@ -271,6 +331,11 @@ void AVBPlayerController::SetHUDScore(float Score)
 	{
 		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
 		VBHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
+	}
+	else
+	{
+		bInitialiseCharacterOverlay = true;
+		HUDScore = Score;
 	}
 }
 
@@ -282,6 +347,11 @@ void AVBPlayerController::SetHUDKills(int32 Kills)
 		FString KillsText = FString::Printf(TEXT("%d"), Kills);
 		VBHUD->CharacterOverlay->KillsAmount->SetText(FText::FromString(KillsText));
 	}
+	else
+	{
+		bInitialiseCharacterOverlay = true;
+		HUDKills = Kills;
+	}
 }
 
 void AVBPlayerController::SetHUDDeaths(int32 Deaths)
@@ -291,6 +361,11 @@ void AVBPlayerController::SetHUDDeaths(int32 Deaths)
 	{
 		FString DeathsText = FString::Printf(TEXT("%d"), Deaths);
 		VBHUD->CharacterOverlay->DeathsAmount->SetText(FText::FromString(DeathsText));
+	}
+	else
+	{
+		bInitialiseCharacterOverlay = true;
+		HUDDeaths = Deaths;
 	}
 }
 
@@ -319,6 +394,11 @@ void AVBPlayerController::SetHUDMatchCountDown(float CountDownTime)
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
 	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->MatchCountDownText)
 	{
+		if(CountDownTime < 0.f)
+		{
+			VBHUD->CharacterOverlay->MatchCountDownText->SetText(FText());
+			return;
+		}
 		int32 Minutes = FMath::FloorToInt(CountDownTime / 60.f);
 		int32 Seconds = CountDownTime - Minutes * 60;
 
@@ -327,13 +407,52 @@ void AVBPlayerController::SetHUDMatchCountDown(float CountDownTime)
 	}
 }
 
+void AVBPlayerController::SetHUDAnnouncementCountdown(float CountDownTime)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if (VBHUD && VBHUD->Announcement && VBHUD->Announcement->WarmupTime)
+	{
+		if(CountDownTime < 0.f)
+		{
+			VBHUD->Announcement->WarmupTime->SetText(FText());
+			return;
+		}
+		int32 Minutes = FMath::FloorToInt(CountDownTime / 60.f);
+		int32 Seconds = CountDownTime - Minutes * 60;
+
+		FString CountDownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		VBHUD->Announcement->WarmupTime->SetText(FText::FromString(CountDownText));
+	}
+}
+
 void AVBPlayerController::SetHUDTime()
 {
-	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
+	float TimeLeft = 0.f;
+	if(MatchState == MatchState::WaitingToStart) TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
+	else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
+	else if (MatchState == MatchState::Cooldown) TimeLeft = CooldownTime + WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
+	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 
+	if (HasAuthority())
+	{
+		VBGameMode = VBGameMode == nullptr ? Cast<AVBGameMode>(UGameplayStatics::GetGameMode(this)) : VBGameMode;
+		if(VBGameMode)
+		{
+			SecondsLeft = FMath::CeilToInt(VBGameMode->GetCountdownTime() + LevelStartingTime);
+			LevelStartingTime = VBGameMode->LevelStartingTime;
+		}
+	}
+	
 	if (CountDownInt != SecondsLeft)
 	{
-		SetHUDMatchCountDown(MatchTime - GetServerTime());
+		if(MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
+		{
+			SetHUDAnnouncementCountdown(TimeLeft);
+		}
+		if(MatchState == MatchState::InProgress)
+		{
+			SetHUDMatchCountDown(TimeLeft);
+		}
 	}
 
 	CountDownInt = SecondsLeft;
@@ -463,5 +582,153 @@ void AVBPlayerController::ClientPlayHeadshotGiven_Implementation()
 	if(HeadshotGivenSound)
 	{
 		UGameplayStatics::PlaySound2D(this, HeadshotGivenSound);
+	}
+}
+
+void AVBPlayerController::ClientSetHUDFinishGame_Implementation()
+{
+	bCanToggleScoreboard = false;
+	
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	
+	if (VBHUD && VBHUD->Scoreboard)
+	{
+		VBHUD->Scoreboard->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPlayerInfo>& PlayerInfoArray)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	
+	if (VBHUD && VBHUD->Scoreboard)
+	{
+		// Clear existing items from the scoreboard
+		VBHUD->Scoreboard->ScoreList->ClearChildren();
+	
+		for (const FPlayerInfo& PlayerInfo : PlayerInfoArray)
+		{
+			FString DisplayName = PlayerInfo.DisplayName;
+	
+			if (ScoreboardItemClass)
+			{
+				UUserWidget* ScoreboardItemWidget = CreateWidget<UUserWidget>(this, ScoreboardItemClass);
+	
+				UWidgetTree* WidgetTree = ScoreboardItemWidget->WidgetTree;
+	
+				if (WidgetTree)
+				{
+					UTextBlock* PlayerNameText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerNameText"));
+					UTextBlock* PlayerScoreText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerScoreText"));
+					UTextBlock* PlayerElimsText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerElimsText"));
+					UTextBlock* PlayerDeathsText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerDeathsText"));
+	
+					if (PlayerNameText && PlayerScoreText && PlayerElimsText && PlayerDeathsText)
+					{
+						PlayerNameText->SetText(FText::FromString(DisplayName));
+						PlayerScoreText->SetText(FText::FromString(PlayerInfo.ScoreText));
+						PlayerElimsText->SetText(FText::FromString(PlayerInfo.KillsText));
+						PlayerDeathsText->SetText(FText::FromString(PlayerInfo.DeathsText));
+	
+						VBHUD->Scoreboard->ScoreList->AddChild(ScoreboardItemWidget);
+					}
+				}
+			}
+		}
+	}
+}
+
+void AVBPlayerController::OnMatchStateSet(FName State)
+{
+	MatchState = State;
+	
+	if(MatchState == MatchState::InProgress)
+	{
+		HandleMatchHasStarted();
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		HandleCooldown();
+	}
+}
+
+void AVBPlayerController::OnRep_MatchState()
+{
+	if(MatchState == MatchState::InProgress)
+	{
+		HandleMatchHasStarted();
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		HandleCooldown();
+	}
+}
+
+void AVBPlayerController::HandleMatchHasStarted()
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if(VBHUD)
+	{
+		VBHUD->AddCharacterOverlay();
+		VBHUD->AddScoreboard();
+		if(VBHUD->Announcement)
+		{
+			VBHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
+
+void AVBPlayerController::HandleCooldown()
+{
+	bCanToggleScoreboard = false;
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	
+	if (VBHUD && VBHUD->Scoreboard)
+	{
+		VBHUD->Scoreboard->SetVisibility(ESlateVisibility::Visible);
+	}
+	if(VBHUD)
+	{
+		VBHUD->CharacterOverlay->RemoveFromParent();
+		if(VBHUD->Announcement && VBHUD->Announcement->AnnouncementText)
+		{
+			VBHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
+			FString AnnouncementText("New Match Starts n:");
+			VBHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
+		}
+	}
+	DisableInput(this);
+}
+
+void AVBPlayerController::ServerCheckMatchState_Implementation()
+{
+	AVBGameMode* GameMode = Cast<AVBGameMode>(UGameplayStatics::GetGameMode(this));
+	if(GameMode)
+	{
+		WarmupTime = GameMode->WarmupTime;
+		MatchTime = GameMode->MatchTime;
+		CooldownTime = GameMode->CooldownTime;
+		LevelStartingTime = GameMode->LevelStartingTime;
+		MatchState = GameMode->GetMatchState();
+		ClientJoinMidGame(MatchState, WarmupTime, MatchTime, CooldownTime, LevelStartingTime);
+
+		if(VBHUD && MatchState == MatchState::WaitingToStart)
+		{
+			VBHUD->AddAnnouncement();
+		}
+	}
+}
+
+void AVBPlayerController::ClientJoinMidGame_Implementation(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime)
+{
+	WarmupTime = Warmup;
+	MatchTime = Match;
+	CooldownTime = Cooldown;
+	LevelStartingTime = StartingTime;
+	MatchState = StateOfMatch;
+	OnMatchStateSet(MatchState);
+	if(VBHUD && MatchState == MatchState::WaitingToStart)
+	{
+		VBHUD->AddAnnouncement();
 	}
 }

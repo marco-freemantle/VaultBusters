@@ -6,11 +6,14 @@
 #include "GameFramework/PlayerController.h"
 #include "VBPlayerController.generated.h"
 
+class AVBGameMode;
+class UCharacterOverlay;
 class AVBCharacter;
 class AVBHUD;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class UUserWidget;
 /**
  * 
  */
@@ -23,6 +26,7 @@ public:
 	AVBPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDScore(float Score);
@@ -31,6 +35,7 @@ public:
 	void SetHUDWeaponAmmo(int32 Ammo);
 	void SetHUDWeaponTotalAmmo(int32 TotalAmmo);
 	void SetHUDMatchCountDown(float CountDownTime);
+	void SetHUDAnnouncementCountdown(float CountDownTime);
 
 	virtual float GetServerTime(); //Synced with server world clock
 	virtual void ReceivedPlayer() override; //Sync with server clock as soon as possible
@@ -74,9 +79,26 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientSetHUDKillFeeds(const FString& VictimName, const FString& AttackerName);
 
+	UFUNCTION(Client, Reliable)
+	void ClientSetHUDFinishGame();
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateScoreboard(const TArray<FPlayerInfo>& PlayerInfoArray);
+
+	void OnMatchStateSet(FName State);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	void PollInit();
+	void HandleMatchHasStarted();
+	void HandleCooldown();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheckMatchState();
+
+	UFUNCTION(Client, Reliable)
+	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Input")
@@ -112,6 +134,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> DropWeaponAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> ShowScoreboardAction;
+
 	void Move(const FInputActionValue& InputActionValue);
 	void LookUp(const FInputActionValue& InputActionValue);
 	void Turn(const FInputActionValue& InputActionValue);
@@ -125,9 +150,16 @@ private:
 	void StopFire(const FInputActionValue& InputActionValue);
 	void Reload(const FInputActionValue& InputActionValue);
 	void DropWeapon(const FInputActionValue& InputActionValue);
+	void ToggleScoreboard();
 
 	bool bCanEquip = true;
 	bool bCanDropWeapon = true;
+	
+	bool bIsScoreboardOpen = false;
+	bool bCanToggleScoreboard = true;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> ScoreboardItemClass;
 
 	void SetbCanEquipTrue();
 	void SetbCanDropWeaponTrue();
@@ -141,9 +173,15 @@ private:
 	AVBHUD* VBHUD;
 
 	UPROPERTY()
+	AVBGameMode* VBGameMode;
+
+	UPROPERTY()
 	AVBCharacter* VBOwnerCharacter;
 
-	float MatchTime = 120.f;
+	float LevelStartingTime = 0.f;
+	float MatchTime = 0.f;
+	float WarmupTime = 0.f;
+	float CooldownTime = 0.f;
 	uint32 CountDownInt = 0;
 
 	UPROPERTY(EditAnywhere)
@@ -154,4 +192,20 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* HeadshotGivenSound;
+
+	UPROPERTY(ReplicatedUsing=OnRep_MatchState)
+	FName MatchState;
+
+	UFUNCTION()
+	void OnRep_MatchState();
+
+	UPROPERTY()
+	UCharacterOverlay* CharacterOverlay;
+	bool bInitialiseCharacterOverlay = false;
+
+	float HUDHealth;
+	float HUDMaxHealth;
+	float HUDScore;
+	int32 HUDKills;
+	int32 HUDDeaths;
 };

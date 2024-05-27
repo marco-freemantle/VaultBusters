@@ -282,7 +282,7 @@ void UCombatComponent::TraceFromBarrel(FHitResult& TraceHitResult)
 		InvalidHitActor->SetActorHiddenInGame(true);
 		return;
 	}
-	if(!EquippedWeapon || InvalidHitActor) return;
+	if(!EquippedWeapon) return;
 	const USkeletalMeshSocket* MuzzleSocket = EquippedWeapon->GetWeaponMesh()->GetSocketByName(FName("muzzle"));
 	FTransform SocketTransform = MuzzleSocket->GetSocketTransform(EquippedWeapon->GetWeaponMesh());
 
@@ -296,6 +296,7 @@ void UCombatComponent::TraceFromBarrel(FHitResult& TraceHitResult)
 
 	double VectorDistance = UKismetMathLibrary::Vector_Distance(TraceHitResult.ImpactPoint, HitTarget);
 
+	if(!InvalidHitActor) return;;
 	if(VectorDistance > 10)
 	{
 		InvalidHitActor->SetActorHiddenInGame(false);
