@@ -27,6 +27,7 @@
 AVBPlayerController::AVBPlayerController()
 {
 	bReplicates = true;
+	CachedPlayerInfoArray = TArray<FPlayerInfo>();
 }
 
 void AVBPlayerController::PlayerTick(float DeltaTime)
@@ -47,6 +48,35 @@ void AVBPlayerController::CheckTimeSync(float DeltaTime)
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 		TimeSyncRunningTime = 0.f;
+	}
+}
+
+void AVBPlayerController::PollInit()
+{
+	if(CharacterOverlay == nullptr)
+	{
+		if(VBHUD && VBHUD->CharacterOverlay)
+		{
+			CharacterOverlay = VBHUD->CharacterOverlay;
+			if(CharacterOverlay)
+			{
+				SetHUDHealth(HUDHealth, HUDMaxHealth);
+				SetHUDScore(HUDScore);
+				SetHUDDeaths(HUDDeaths);
+				SetHUDKills(HUDKills);
+			}
+		}
+	}
+	if(Scoreboard == nullptr)
+	{
+		if(VBHUD && VBHUD->Scoreboard)
+		{
+			Scoreboard = VBHUD->Scoreboard;
+			if(Scoreboard)
+			{
+				ClientUpdateScoreboard(CachedPlayerInfoArray);
+			}
+		}
 	}
 }
 
@@ -130,24 +160,6 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Reload);
 	VBInputComponent->BindAction(ShowScoreboardAction, ETriggerEvent::Started, this, &AVBPlayerController::ToggleScoreboard);
 	VBInputComponent->BindAction(ShowScoreboardAction, ETriggerEvent::Completed, this, &AVBPlayerController::ToggleScoreboard);
-}
-
-void AVBPlayerController::PollInit()
-{
-	if(CharacterOverlay == nullptr)
-	{
-		if(VBHUD && VBHUD->CharacterOverlay)
-		{
-			CharacterOverlay = VBHUD->CharacterOverlay;
-			if(CharacterOverlay)
-			{
-				SetHUDHealth(HUDHealth, HUDMaxHealth);
-				SetHUDScore(HUDScore);
-				SetHUDDeaths(HUDDeaths);
-				SetHUDKills(HUDKills);
-			}
-		}
-	}
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -585,20 +597,9 @@ void AVBPlayerController::ClientPlayHeadshotGiven_Implementation()
 	}
 }
 
-void AVBPlayerController::ClientSetHUDFinishGame_Implementation()
-{
-	bCanToggleScoreboard = false;
-	
-	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	
-	if (VBHUD && VBHUD->Scoreboard)
-	{
-		VBHUD->Scoreboard->SetVisibility(ESlateVisibility::Visible);
-	}
-}
-
 void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPlayerInfo>& PlayerInfoArray)
 {
+	CachedPlayerInfoArray = PlayerInfoArray;
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
 	
 	if (VBHUD && VBHUD->Scoreboard)
@@ -609,19 +610,16 @@ void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPl
 		for (const FPlayerInfo& PlayerInfo : PlayerInfoArray)
 		{
 			FString DisplayName = PlayerInfo.DisplayName;
-	
 			if (ScoreboardItemClass)
 			{
 				UUserWidget* ScoreboardItemWidget = CreateWidget<UUserWidget>(this, ScoreboardItemClass);
-	
-				UWidgetTree* WidgetTree = ScoreboardItemWidget->WidgetTree;
-	
-				if (WidgetTree)
+				if (UWidgetTree* WidgetTree = ScoreboardItemWidget->WidgetTree)
 				{
 					UTextBlock* PlayerNameText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerNameText"));
 					UTextBlock* PlayerScoreText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerScoreText"));
 					UTextBlock* PlayerElimsText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerElimsText"));
 					UTextBlock* PlayerDeathsText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerDeathsText"));
+					
 	
 					if (PlayerNameText && PlayerScoreText && PlayerElimsText && PlayerDeathsText)
 					{
@@ -669,8 +667,8 @@ void AVBPlayerController::HandleMatchHasStarted()
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
 	if(VBHUD)
 	{
-		VBHUD->AddCharacterOverlay();
-		VBHUD->AddScoreboard();
+		if(VBHUD->CharacterOverlay == nullptr) VBHUD->AddCharacterOverlay();
+		if(VBHUD->Scoreboard == nullptr) VBHUD->AddScoreboard();
 		if(VBHUD->Announcement)
 		{
 			VBHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);

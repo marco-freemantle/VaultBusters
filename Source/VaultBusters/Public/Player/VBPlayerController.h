@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "VBPlayerController.generated.h"
 
+class UScoreboard;
 class AVBGameMode;
 class UCharacterOverlay;
 class AVBCharacter;
@@ -78,9 +79,6 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientSetHUDKillFeeds(const FString& VictimName, const FString& AttackerName);
-
-	UFUNCTION(Client, Reliable)
-	void ClientSetHUDFinishGame();
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateScoreboard(const TArray<FPlayerInfo>& PlayerInfoArray);
@@ -208,4 +206,9 @@ private:
 	float HUDScore;
 	int32 HUDKills;
 	int32 HUDDeaths;
+	
+	UPROPERTY()
+	UScoreboard* Scoreboard;
+	TArray<FPlayerInfo> CachedPlayerInfoArray;
+	bool bInitialiseScoreboard = false;
 };

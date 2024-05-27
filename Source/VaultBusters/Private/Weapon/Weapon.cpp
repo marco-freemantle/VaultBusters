@@ -166,7 +166,8 @@ void AWeapon::Fire(const FVector& HitTarget)
 	if(FireEffectMuzzle && FireSound)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAttached(FireEffectMuzzle, GetWeaponMesh(), FName("muzzle"), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		//UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		UGameplayStatics::SpawnSoundAttached(FireSound, GetWeaponMesh());
 	}
 	if(CasingClass)
 	{

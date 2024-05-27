@@ -66,10 +66,6 @@ void AVBGameMode::Tick(float DeltaSeconds)
 		CountdownTime = WarmupTime + MatchTime - GetWorld()->GetTimeSeconds();
 		if(CountdownTime <= 0.f)
 		{
-			// for (AVBPlayerController* PlayerController : ConnectedControllers)
-			// {
-			// 	PlayerController->ClientSetHUDFinishGame();
-			// }
 			SetMatchState(MatchState::Cooldown);
 		}
 	}
