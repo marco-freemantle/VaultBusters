@@ -51,6 +51,9 @@ private:
 	UNiagaraSystem* ImpactParticles;
 
 	UPROPERTY(EditAnywhere)
+	UParticleSystem* ImpactParticles_NonNiagara;
+
+	UPROPERTY(EditAnywhere)
 	USoundBase* ImpactSound;
 
 	UPROPERTY(EditAnywhere)

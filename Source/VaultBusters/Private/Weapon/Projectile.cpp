@@ -78,6 +78,10 @@ void AProjectile::MulticastPlayHitEffects_Implementation(bool bFleshHit)
 			
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactParticles, GetActorLocation(), ParticleTransform.Rotator(), FVector(0.5f));
 		}
+		if(ImpactParticles_NonNiagara)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles_NonNiagara, GetActorLocation());
+		}
 		if(ImpactSound)
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());

@@ -19,9 +19,6 @@ public:
 	void SetMasterVolume(float NewValue);
 
 	UFUNCTION(BlueprintCallable)
-	void SetMouseSentivity(float NewValue);
-
-	UFUNCTION(BlueprintCallable)
 	float GetMasterVolume() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -32,6 +29,12 @@ public:
 
 	UPROPERTY(Config, BlueprintReadWrite)
 	float MasterVolume;
+
+	UPROPERTY(Config, BlueprintReadWrite)
+	float MusicVolume;
+
+	UPROPERTY(Config, BlueprintReadWrite)
+	float SoundEffectsVolume;
 
 	UPROPERTY(Config, BlueprintReadWrite)
 	float MouseSensitivity;

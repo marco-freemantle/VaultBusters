@@ -5,18 +5,15 @@
 
 UVBGameUserSettings::UVBGameUserSettings(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	MasterVolume = 5.f;
-	MouseSensitivity = 5.f;
+	MasterVolume = 1.f;
+	MusicVolume = 1.f;
+	SoundEffectsVolume = 1.f;
+	MouseSensitivity = 1.f;
 }
 
 void UVBGameUserSettings::SetMasterVolume(float NewValue)
 {
 	MasterVolume = NewValue;
-}
-
-void UVBGameUserSettings::SetMouseSentivity(float NewValue)
-{
-	MouseSensitivity = NewValue;
 }
 
 float UVBGameUserSettings::GetMasterVolume() const
