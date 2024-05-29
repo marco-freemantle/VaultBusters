@@ -12,42 +12,21 @@
   <component name="ChangeListManager">
     <list default="true" id="a5dcea6c-be5f-458b-b394-3f57cc1632cc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AR4A/SKEL_AR4A.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AR4A/SKEL_AR4A.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AR4A/SK_AR4A.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AR4A/SK_AR4A.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AWM/PHYS_AWM.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AWM/PHYS_AWM.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AWM/SKEL_AWM.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AWM/SKEL_AWM.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AWM/SK_AWM.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/AWM/SK_AWM.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/PumpShotgun/PHYS_PumpShotgun.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/PumpShotgun/PHYS_PumpShotgun.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/PumpShotgun/SKEL_PumpShotgun.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/PumpShotgun/SKEL_PumpShotgun.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/PumpShotgun/SK_PumpShotgun.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/PumpShotgun/SK_PumpShotgun.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/Renetti/PHYS_Renetti.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/Renetti/PHYS_Renetti.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/Renetti/SKEL_Renetti.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/Renetti/SKEL_Renetti.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/SMG45/PHYS_SMG45.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/SMG45/PHYS_SMG45.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/SMG45/SKEL_SMG45.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/SMG45/SKEL_SMG45.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/SMG45/SK_SMG45.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolyGunsPack/Meshes/Firearms/Guns/SMG45/SK_SMG45.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Weapons_Rigged/PHYS_Wep_PistolBandit_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Weapons_Rigged/PHYS_Wep_PistolBandit_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Weapons_Rigged/SKEL_Wep_PistolBandit_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Weapons_Rigged/SKEL_Wep_PistolBandit_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Weapons_Rigged/SK_Wep_PistolBandit_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/PolygonHeist/Meshes/Weapons_Rigged/SK_Wep_PistolBandit_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Sounds/Impacts/wav/hit_given_Cue.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Sounds/Impacts/wav/hit_given_Cue.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Sounds/Pistol/Wavs/Pistol_Lower.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Sounds/Pistol/Wavs/Pistol_Lower.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Sounds/Pistol/Wavs/Pistol_Raise.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Sounds/Pistol/Wavs/Pistol_Raise.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Sounds/SMG/SMG_Cue.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Sounds/SMG/SMG_Cue.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Sounds/SniperRifle/Wavs/SniperRifle_ZoomIn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Sounds/SniperRifle/Wavs/SniperRifle_ZoomIn.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Sounds/SniperRifle/Wavs/SniperRifle_ZoomOut.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Sounds/SniperRifle/Wavs/SniperRifle_ZoomOut.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/RocketLauncher/BP_RocketLauncher.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/RocketLauncher/BP_RocketLauncher.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Maps/MainMenu.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/MainMenu.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/OnlineGameInstance.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/WBP_MainMenu.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/BP_Assault.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/BP_AssaultRifle.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/BP_AssaultRifle1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Maps/BankMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/BankMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Maps/Demonstration.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Maps/Test.umap" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/TestMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/VBComponents/CombatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/VBComponents/CombatComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/VBTypes/WeaponTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/VBTypes/WeaponTypes.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Weapon/Weapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Weapon/Weapon.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Character/VBCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Character/VBCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/VBComponents/CombatComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/VBComponents/CombatComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Weapon/ProjectileWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Weapon/ProjectileWeapon.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Weapon/Weapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Weapon/Weapon.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/VaultBusters.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/VaultBusters.Build.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VaultBusters.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/VaultBusters.uproject" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,6 +49,8 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
@@ -314,7 +295,12 @@
       <workItem from="1716809283746" duration="7658000" />
       <workItem from="1716891096862" duration="3439000" />
       <workItem from="1716897988504" duration="4155000" />
-      <workItem from="1716975685953" duration="7886000" />
+      <workItem from="1716975685953" duration="8538000" />
+      <workItem from="1716986225712" duration="1089000" />
+      <workItem from="1716987372031" duration="638000" />
+      <workItem from="1716989933046" duration="52000" />
+      <workItem from="1716990765274" duration="1478000" />
+      <workItem from="1716992888830" duration="317000" />
     </task>
     <servers />
   </component>
