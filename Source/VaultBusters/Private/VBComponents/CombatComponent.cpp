@@ -378,12 +378,17 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	{
 		bAiming = false;
 		ServerSetAiming(false);
+		Character->ShowSniperScopeWidget(false);
 		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 		return;
 	}
 	bAiming = bIsAiming;
 	ServerSetAiming(bIsAiming);
 	Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	if(Character->IsLocallyControlled() && EquippedWeapon && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	{
+		Character->ShowSniperScopeWidget(bIsAiming);
+	}
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)

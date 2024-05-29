@@ -273,7 +273,10 @@ void AVBPlayerController::Aim(const FInputActionValue& InputActionValue)
 {
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
-		VBCharacter->GetCombatComponent()->SetAiming(true);
+		if(VBCharacter->GetCombatComponent() && VBCharacter->GetCombatComponent()->EquippedWeapon)
+		{
+			VBCharacter->GetCombatComponent()->SetAiming(true);
+		}
 	}
 }
 
@@ -281,7 +284,10 @@ void AVBPlayerController::StopAim(const FInputActionValue& InputActionValue)
 {
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
-		VBCharacter->GetCombatComponent()->SetAiming(false);
+		if(VBCharacter->GetCombatComponent() && VBCharacter->GetCombatComponent()->EquippedWeapon)
+		{
+			VBCharacter->GetCombatComponent()->SetAiming(false);
+		}
 	}
 }
 

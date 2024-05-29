@@ -51,7 +51,7 @@ public:
 	
 	bool bIsFiring;
 
-	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon, BlueprintReadOnly)
 	AWeapon* EquippedWeapon;
 	
 protected:

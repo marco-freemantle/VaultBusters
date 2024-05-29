@@ -17,8 +17,11 @@ class VAULTBUSTERS_API AProjectileWeapon : public AWeapon
 
 public:
 	virtual void Fire(const FVector& HitTarget) override;
-	
-private:
+
+protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectile> ProjectileClass;
+	
+private:
+	
 };

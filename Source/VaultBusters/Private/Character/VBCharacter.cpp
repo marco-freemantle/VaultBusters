@@ -142,7 +142,28 @@ void AVBCharacter::PlayReloadMontage()
 	if(AnimInstance && ReloadMontage)
 	{
 		AnimInstance->Montage_Play(ReloadMontage);
-		FName SectionName = FName("Rifle");
+		FName SectionName;
+		switch (Combat->EquippedWeapon->GetWeaponType())
+		{
+		case EWeaponType::EWT_AssaultRifle:
+			SectionName = FName("Rifle");
+			break;
+		case EWeaponType::EWT_RocketLauncher:
+			SectionName = FName("Rifle");
+			break;
+		case EWeaponType::EWT_Pistol:
+			SectionName = FName("Rifle");
+			break;
+		case EWeaponType::EWT_SubmachineGun:
+			SectionName = FName("Rifle");
+			break;
+		case EWeaponType::EWT_Shotgun:
+			SectionName = FName("Rifle");
+			break;
+		case EWeaponType::EWT_SniperRifle:
+			SectionName = FName("Rifle");
+			break;
+		}
 		//TODO: Each weapon should have weapon type. Can change section name to play animations for given weapon (rifle, pistol etc)
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
@@ -274,6 +295,10 @@ void AVBCharacter::MulticastElim_Implementation()
 	{
 		Combat->bElimmed = true;
 		Combat->InvalidHitActor->Destroy();
+	}
+	if(IsLocallyControlled() && Combat && Combat->bAiming && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	{
+		ShowSniperScopeWidget(false);
 	}
 }
 
