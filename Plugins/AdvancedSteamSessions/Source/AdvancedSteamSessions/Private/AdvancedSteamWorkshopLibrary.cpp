@@ -8,6 +8,7 @@ DEFINE_LOG_CATEGORY(AdvancedSteamWorkshopLog);
 void UAdvancedSteamWorkshopLibrary::GetNumSubscribedWorkshopItems(int32 & NumberOfItems)
 {
 	NumberOfItems = 0;
+#if STEAM_SDK_INSTALLED && (PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX)
 
 	if (SteamAPI_Init())
 	{
@@ -19,13 +20,18 @@ void UAdvancedSteamWorkshopLibrary::GetNumSubscribedWorkshopItems(int32 & Number
 		UE_LOG(AdvancedSteamWorkshopLog, Warning, TEXT("Error in GetNumSubscribedWorkshopItemCount : SteamAPI is not Inited!"));
 		return;
 	}
+#endif
+
+	UE_LOG(AdvancedSteamWorkshopLog, Warning, TEXT("Error in GetNumSubscribedWorkshopItemCount : Called on an incompatible platform"));
+	return;
 }
 
 TArray<FBPSteamWorkshopID> UAdvancedSteamWorkshopLibrary::GetSubscribedWorkshopItems(int32 & NumberOfItems)
 {
 	TArray<FBPSteamWorkshopID> outArray;
 	NumberOfItems = 0;
-	
+
+#if STEAM_SDK_INSTALLED && (PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX)
 
 	if (SteamAPI_Init())
 	{
@@ -56,4 +62,8 @@ TArray<FBPSteamWorkshopID> UAdvancedSteamWorkshopLibrary::GetSubscribedWorkshopI
 		UE_LOG(AdvancedSteamWorkshopLog, Warning, TEXT("Error in GetSubscribedWorkshopItemCount : SteamAPI is not Inited!"));
 		return outArray;
 	}
+#endif
+
+	UE_LOG(AdvancedSteamWorkshopLog, Warning, TEXT("Error in GetSubscribedWorkshopItemCount : Called on an incompatible platform"));
+	return outArray;
 }
