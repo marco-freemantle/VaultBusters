@@ -37,12 +37,12 @@ protected:
 
 	void DelayedDestroy();
 
+	UPROPERTY(VisibleAnywhere)
+	UProjectileMovementComponent* ProjectileMovementComponent;
+
 private:
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* CollisionBox;
-
-	UPROPERTY(VisibleAnywhere)
-	UProjectileMovementComponent* ProjectileMovementComponent;
 
 	UPROPERTY(EditAnywhere)
 	UNiagaraSystem* ProjectileTracer;
