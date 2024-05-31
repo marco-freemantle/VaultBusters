@@ -85,6 +85,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	{
 		EquippedWeapon->Dropped();
 	}
+	CombatState = ECombatState::ECS_Unoccupied;
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket")))
@@ -101,7 +102,6 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	{
 		Reload();
 	}
-	
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
 }
@@ -127,6 +127,7 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 		if(OldWeapon && Character->IsLocallyControlled())
 		{
 			OldWeapon->GetWeaponMesh()->SetVisibility(true);
+			Character->ShowSniperScopeWidget(false);
 		}
 		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 		if(Controller)
@@ -288,6 +289,7 @@ void UCombatComponent::TraceFromBarrel(FHitResult& TraceHitResult)
 
 	GetWorld()->LineTraceSingleByChannel(TraceHitResult, SocketTransform.GetLocation(), HitTarget, ECC_Visibility);
 
+	if(!TraceHitResult.bBlockingHit || Cast<AProjectile>(TraceHitResult.GetActor()))
 	if(!TraceHitResult.bBlockingHit || Cast<AProjectile>(TraceHitResult.GetActor()))
 	{
 		InvalidHitActor->SetActorHiddenInGame(true);

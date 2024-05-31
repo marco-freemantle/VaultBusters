@@ -164,7 +164,6 @@ void AVBCharacter::PlayReloadMontage()
 			SectionName = FName("Rifle");
 			break;
 		}
-		//TODO: Each weapon should have weapon type. Can change section name to play animations for given weapon (rifle, pistol etc)
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
@@ -200,8 +199,10 @@ void AVBCharacter::EquipWeapon()
 {
 	if(Combat)
 	{
+		StopAnimMontage(ReloadMontage);
 		if(HasAuthority())
 		{
+			MulticastInterruptReload();
 			Combat->EquipWeapon(OverlappingWeapon);
 		}
 		else
@@ -215,6 +216,7 @@ void AVBCharacter::ServerEquipWeapon_Implementation()
 {
 	if(Combat)
 	{
+		StopAnimMontage(ReloadMontage);
 		Combat->EquipWeapon(OverlappingWeapon);
 	}
 }
@@ -266,7 +268,7 @@ void AVBCharacter::Elim()
 {
 	if(Combat && Combat->EquippedWeapon)
 	{
-		Combat->EquippedWeapon->Dropped();
+		DropWeapon();
 	}
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(ElimTimer, this, &AVBCharacter::ElimTimerFinished, ElimDelay);

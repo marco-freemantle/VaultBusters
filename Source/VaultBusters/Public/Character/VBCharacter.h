@@ -43,6 +43,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayHitReceived(bool bWasHeadShot);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastInterruptReload();
+
 	void Elim();
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -84,9 +87,6 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerDropWeapon();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastInterruptReload();
 
 	float AO_Yaw;
 	float InterpAO_Yaw;
