@@ -69,6 +69,9 @@ public:
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon, BlueprintReadOnly)
 	AWeapon* EquippedWeapon;
+
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon, BlueprintReadOnly)
+	AWeapon* SecondaryWeapon;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -78,6 +81,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon(const AWeapon* OldWeapon);
+
+	UFUNCTION()
+	void OnRep_SecondaryWeapon(const AWeapon* OldWeapon);
 
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector_NetQuantize& TraceHitTarget);

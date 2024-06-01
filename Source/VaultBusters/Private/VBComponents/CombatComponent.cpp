@@ -73,6 +73,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
 	DOREPLIFETIME(UCombatComponent, CombatState);
 }
@@ -138,6 +139,10 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
 		Character->bUseControllerRotationYaw = false;
 	}
+}
+
+void UCombatComponent::OnRep_SecondaryWeapon(const AWeapon* OldWeapon)
+{
 }
 
 // Called on the Server from AVBCharacter

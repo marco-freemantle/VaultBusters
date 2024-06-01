@@ -14,6 +14,7 @@
 #include "Player/VBPlayerController.h"
 #include "Player/VBPlayerState.h"
 #include "VaultBusters/VaultBusters.h"
+#include "VBComponents/BuffComponent.h"
 #include "VBComponents/CombatComponent.h"
 #include "Weapon/Weapon.h"
 
@@ -36,6 +37,9 @@ AVBCharacter::AVBCharacter()
 
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
+
+	Buff = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	Buff->SetIsReplicated(true);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
@@ -60,6 +64,7 @@ void AVBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME_CONDITION(AVBCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(AVBCharacter, Health);
+	DOREPLIFETIME(AVBCharacter, Shield);
 }
 
 void AVBCharacter::PostInitializeComponents()
@@ -70,13 +75,20 @@ void AVBCharacter::PostInitializeComponents()
 	{
 		Combat->Character = this;
 	}
+	if (Buff)
+	{
+		Buff->Character = this;
+	}
 }
 
 void AVBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SpawnDefaultWeapon();
+	UpdateHUDAmmo();
 	UpdateHUDHealth();
+	UpdateHUDShield();
 	if(HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AVBCharacter::ReceiveDamage);
@@ -113,6 +125,21 @@ void AVBCharacter::PollInit()
 void AVBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void AVBCharacter::SpawnDefaultWeapon()
+{
+	AVBGameMode* VBGameMode = Cast<AVBGameMode>(UGameplayStatics::GetGameMode(this));
+	UWorld* World = GetWorld();
+	if(VBGameMode && World && !bElimmed && DefaultWeaponClass)
+	{
+		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);
+		StartingWeapon->bDestroyWeapon = true;
+		if(Combat)
+		{
+			Combat->EquipWeapon(StartingWeapon);
+		}
+	}
 }
 
 void AVBCharacter::PlayFireMontage(bool bAiming)
@@ -284,7 +311,14 @@ void AVBCharacter::Elim()
 {
 	if(Combat && Combat->EquippedWeapon)
 	{
-		DropWeapon();
+		if(Combat->EquippedWeapon->bDestroyWeapon)
+		{
+			Combat->EquippedWeapon->Destroy();
+		}
+		else
+		{
+			DropWeapon();
+		}
 	}
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(ElimTimer, this, &AVBCharacter::ElimTimerFinished, ElimDelay);
@@ -370,8 +404,26 @@ void AVBCharacter::AimOffset(float DeltaTime)
 void AVBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatorController, AActor* DamageCauser)
 {
-	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+	if (bElimmed) return;
+
+	float DamageToHealth = Damage;
+	if(Shield > 0.f)
+	{
+		if(Shield >= Damage)
+		{
+			Shield = FMath::Clamp(Shield - Damage, 0.f, MaxShield);
+			DamageToHealth = 0.f;
+		}
+		else
+		{
+			DamageToHealth = FMath::Clamp(DamageToHealth - Shield, 0.f, Damage);
+			Shield = 0.f;
+		}
+	}
+	
+	Health = FMath::Clamp(Health - DamageToHealth, 0.f, MaxHealth);
 	UpdateHUDHealth();
+	UpdateHUDShield();
 	PlayHitReactMontage();
 	MulticastPlayHitReceived(false);
 
@@ -464,8 +516,39 @@ void AVBCharacter::UpdateHUDHealth()
 	}
 }
 
-void AVBCharacter::OnRep_Health()
+void AVBCharacter::UpdateHUDShield()
+{
+	VBPlayerController = VBPlayerController == nullptr ? Cast<AVBPlayerController>(Controller) : VBPlayerController;
+	if(VBPlayerController)
+	{
+		VBPlayerController->SetHUDShield(Shield, MaxShield);
+	}
+}
+
+void AVBCharacter::UpdateHUDAmmo()
+{
+	VBPlayerController = VBPlayerController == nullptr ? Cast<AVBPlayerController>(Controller) : VBPlayerController;
+	if(VBPlayerController && Combat && Combat->EquippedWeapon)
+	{
+		VBPlayerController->SetHUDWeaponAmmo(Combat->EquippedWeapon->Ammo);
+		VBPlayerController->SetHUDWeaponTotalAmmo(Combat->EquippedWeapon->TotalAmmo);
+	}
+}
+
+void AVBCharacter::OnRep_Health(float LastHealth)
 {
 	UpdateHUDHealth();
-	PlayHitReactMontage();
+	if (Health < LastHealth)
+	{
+		PlayHitReactMontage();
+	}
+}
+
+void AVBCharacter::OnRep_Shield(float LastShield)
+{
+	UpdateHUDShield();
+	if (Shield < LastShield)
+	{
+		PlayHitReactMontage();
+	}
 }

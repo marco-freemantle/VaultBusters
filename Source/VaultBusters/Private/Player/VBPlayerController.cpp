@@ -60,10 +60,13 @@ void AVBPlayerController::PollInit()
 			CharacterOverlay = VBHUD->CharacterOverlay;
 			if(CharacterOverlay)
 			{
-				SetHUDHealth(HUDHealth, HUDMaxHealth);
-				SetHUDScore(HUDScore);
-				SetHUDDeaths(HUDDeaths);
-				SetHUDKills(HUDKills);
+				if (bInitialiseHealth) SetHUDHealth(HUDHealth, HUDMaxHealth);
+				if (bInitialiseShield) SetHUDShield(HUDShield, HUDMaxShield);
+				if (bInitialiseScore) SetHUDScore(HUDScore);
+				if (bInitialiseDeaths) SetHUDDeaths(HUDDeaths);
+				if (bInitialiseKills) SetHUDKills(HUDKills);
+				if (bInitialiseWeaponAmmo) SetHUDWeaponAmmo(HUDWeaponAmmo);
+				if (bInitialiseWeaponTotalAmmo) SetHUDWeaponTotalAmmo(HUDWeaponTotalAmmo);
 			}
 		}
 	}
@@ -109,6 +112,12 @@ void AVBPlayerController::OnPossess(APawn* InPawn)
 	if(VBCharacter)
 	{
 		SetHUDHealth(VBCharacter->GetHealth(), VBCharacter->GetMaxHealth());
+		SetHUDShield(VBCharacter->GetShield(), VBCharacter->GetMaxShield());
+		if(VBCharacter && VBCharacter->GetCombatComponent() && VBCharacter->GetCombatComponent()->EquippedWeapon)
+		{
+			SetHUDWeaponAmmo(VBCharacter->GetCombatComponent()->EquippedWeapon->Ammo);
+			SetHUDWeaponTotalAmmo(VBCharacter->GetCombatComponent()->EquippedWeapon->TotalAmmo);
+		}
 	}
 }
 
@@ -348,10 +357,27 @@ void AVBPlayerController::SetHUDHealth(float Health, float MaxHealth)
 	}
 	else
 	{
-		bInitialiseCharacterOverlay = true;
+		bInitialiseHealth = true;
 		HUDHealth = Health;
 		HUDMaxHealth = MaxHealth;
 	}
+}
+
+void AVBPlayerController::SetHUDShield(float Shield, float MaxShield)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+    if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->ShieldText)
+    {
+    	const float ShieldPercent = Shield / MaxShield;
+    	FString ShieldText = FString::Printf(TEXT("%d"), FMath::CeilToInt(Shield));
+    	VBHUD->CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldText));
+    }
+    else
+    {
+    	bInitialiseShield = true;
+    	HUDShield = Shield;
+    	HUDMaxShield = MaxShield;
+    }
 }
 
 void AVBPlayerController::SetHUDScore(float Score)
@@ -364,7 +390,7 @@ void AVBPlayerController::SetHUDScore(float Score)
 	}
 	else
 	{
-		bInitialiseCharacterOverlay = true;
+		bInitialiseScore = true;
 		HUDScore = Score;
 	}
 }
@@ -379,7 +405,7 @@ void AVBPlayerController::SetHUDKills(int32 Kills)
 	}
 	else
 	{
-		bInitialiseCharacterOverlay = true;
+		bInitialiseKills = true;
 		HUDKills = Kills;
 	}
 }
@@ -394,7 +420,7 @@ void AVBPlayerController::SetHUDDeaths(int32 Deaths)
 	}
 	else
 	{
-		bInitialiseCharacterOverlay = true;
+		bInitialiseDeaths = true;
 		HUDDeaths = Deaths;
 	}
 }
@@ -407,6 +433,11 @@ void AVBPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 		FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
 		VBHUD->CharacterOverlay->AmmoAmount->SetText(FText::FromString(AmmoText));
 	}
+	else
+	{
+		bInitialiseWeaponAmmo = true;
+		HUDWeaponAmmo = Ammo;
+	}
 }
 
 void AVBPlayerController::SetHUDWeaponTotalAmmo(int32 TotalAmmo)
@@ -416,6 +447,11 @@ void AVBPlayerController::SetHUDWeaponTotalAmmo(int32 TotalAmmo)
 	{
 		FString TotalAmmoText = FString::Printf(TEXT("%d"), TotalAmmo);
 		VBHUD->CharacterOverlay->TotalAmmoAmount->SetText(FText::FromString(TotalAmmoText));
+	}
+	else
+	{
+		bInitialiseWeaponTotalAmmo = true;
+		HUDWeaponTotalAmmo = TotalAmmo;
 	}
 }
 

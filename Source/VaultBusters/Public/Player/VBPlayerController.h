@@ -30,6 +30,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void SetHUDHealth(float Health, float MaxHealth);
+	void SetHUDShield(float Shield, float MaxShield);
 	void SetHUDScore(float Score);
 	void SetHUDKills(int32 Kills);
 	void SetHUDDeaths(int32 Deaths);
@@ -203,13 +204,23 @@ private:
 
 	UPROPERTY()
 	UCharacterOverlay* CharacterOverlay;
-	bool bInitialiseCharacterOverlay = false;
 
 	float HUDHealth;
+	bool bInitialiseHealth = false;
 	float HUDMaxHealth;
+	float HUDShield;
+	bool bInitialiseShield = false;
+	float HUDMaxShield;
 	float HUDScore;
+	bool bInitialiseScore = false;
 	int32 HUDKills;
+	bool bInitialiseKills = false;
 	int32 HUDDeaths;
+	bool bInitialiseDeaths = false;
+	int32 HUDWeaponAmmo;
+	bool bInitialiseWeaponAmmo = false;
+	int32 HUDWeaponTotalAmmo;
+	bool bInitialiseWeaponTotalAmmo = false;
 	
 	UPROPERTY()
 	UScoreboard* Scoreboard;
