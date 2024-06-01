@@ -29,7 +29,7 @@ void AProjectileGrenade::BeginPlay()
 			DestroyTimer,
 			this,
 			&AProjectileGrenade::DestroyTimerFinished,
-			3.f
+			2.f
 		);
 	}
 }

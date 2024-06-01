@@ -31,6 +31,7 @@ public:
 	void PlayFireMontage(bool bAiming);
 	void PlayHitReactMontage();
 	void PlayReloadMontage();
+	void PlayThrowGrenadeMontage();
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 
@@ -82,6 +83,9 @@ private:
 	UPROPERTY()
 	AVBPlayerState* VBPlayerState;
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* AttachedGrenade;
+
 	UFUNCTION(Server, Reliable)
 	void ServerEquipWeapon();
 
@@ -104,6 +108,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category=Combat)
 	UAnimMontage* ReloadMontage;
+
+	UPROPERTY(EditAnywhere, Category=Combat)
+	UAnimMontage* ThrowGrenadeMontage;
 
 	void HideCameraIfCharacterClose();
 
@@ -138,6 +145,7 @@ public:
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	AWeapon* GetEquippedWeapon() const;

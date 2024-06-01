@@ -160,6 +160,7 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AVBPlayerController::Reload);
 	VBInputComponent->BindAction(ShowScoreboardAction, ETriggerEvent::Started, this, &AVBPlayerController::ToggleScoreboard);
 	VBInputComponent->BindAction(ShowScoreboardAction, ETriggerEvent::Completed, this, &AVBPlayerController::ToggleScoreboard);
+	VBInputComponent->BindAction(ThrowGrenadeAction, ETriggerEvent::Triggered, this, &AVBPlayerController::ThrowGrenade);
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -231,6 +232,17 @@ void AVBPlayerController::DropWeapon(const FInputActionValue& InputActionValue)
 		}
 	}
 	bCanDropWeapon = false;
+}
+
+void AVBPlayerController::ThrowGrenade(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		if(VBCharacter->GetCombatComponent())
+		{
+			VBCharacter->GetCombatComponent()->ThrowGrenade();
+		}
+	}
 }
 
 void AVBPlayerController::ToggleScoreboard()

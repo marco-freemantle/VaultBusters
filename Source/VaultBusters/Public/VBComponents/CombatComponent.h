@@ -10,6 +10,7 @@
 
 #define TRACE_LENGTH 80000.f
 
+class AProjectile;
 class AVBHUD;
 class AVBPlayerController;
 class AWeapon;
@@ -39,9 +40,24 @@ public:
 	void FireButtonPressed(bool bPressed);
 	
 	void Reload();
+	void ThrowGrenade();
+	void AttachActorToLeftHand(AActor* ActorToAttach);
+	void ShowAttachedGrenade(bool bShowGrenade);
+	
+	UFUNCTION(Server, Reliable)
+	void ServerThrowGrenade();
 	
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishThrowGrenade();
+
+	UFUNCTION(BlueprintCallable)
+	void LaunchGrenade();
+
+	UFUNCTION(Server, Reliable)
+	void ServerLaunchGrenade(const FVector_NetQuantize& Target);
 	
 	UFUNCTION(Server, Reliable)
 	void ServerReload();
@@ -98,6 +114,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> InvalidHitActorClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AProjectile> GrenadeClass;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;

@@ -135,6 +135,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> ShowScoreboardAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> ThrowGrenadeAction;
+
 	void Move(const FInputActionValue& InputActionValue);
 	void LookUp(const FInputActionValue& InputActionValue);
 	void Turn(const FInputActionValue& InputActionValue);
@@ -148,6 +151,7 @@ private:
 	void StopFire(const FInputActionValue& InputActionValue);
 	void Reload(const FInputActionValue& InputActionValue);
 	void DropWeapon(const FInputActionValue& InputActionValue);
+	void ThrowGrenade(const FInputActionValue& InputActionValue);
 	void ToggleScoreboard();
 
 	bool bCanEquip = true;

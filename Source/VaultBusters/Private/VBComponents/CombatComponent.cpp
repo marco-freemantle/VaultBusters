@@ -166,9 +166,52 @@ void UCombatComponent::DropWeapon()
 void UCombatComponent::Reload()
 {
 	if(!EquippedWeapon) return;
-	if(EquippedWeapon->TotalAmmo > 0 && EquippedWeapon->Ammo < EquippedWeapon->MagCapacity && CombatState != ECombatState::ECS_Reloading)
+	if(EquippedWeapon->TotalAmmo > 0 && EquippedWeapon->Ammo < EquippedWeapon->MagCapacity && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		ServerReload();
+	}
+}
+
+void UCombatComponent::ThrowGrenade()
+{
+	if(CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr ) return;
+	CombatState = ECombatState::ECS_ThrowingGrenade;
+	if(Character)
+	{
+		Character->PlayThrowGrenadeMontage();
+		AttachActorToLeftHand(EquippedWeapon);
+		ShowAttachedGrenade(true);
+	}
+	if(Character && !Character->HasAuthority())
+	{
+		ServerThrowGrenade();
+	}
+}
+
+void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
+{
+	if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("LeftHandSocket")))
+	{
+		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+	}
+}
+
+void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
+{
+	if(Character && Character->GetAttachedGrenade())
+	{
+		Character->GetAttachedGrenade()->SetVisibility(bShowGrenade);
+	}
+}
+
+void UCombatComponent::ServerThrowGrenade_Implementation()
+{
+	CombatState = ECombatState::ECS_ThrowingGrenade;
+	if(Character)
+	{
+		Character->PlayThrowGrenadeMontage();
+		AttachActorToLeftHand(EquippedWeapon);
+		ShowAttachedGrenade(true);
 	}
 }
 
@@ -198,6 +241,39 @@ void UCombatComponent::FinishReloading()
 	}
 }
 
+void UCombatComponent::FinishThrowGrenade()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+	if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket")))
+	{
+		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+	}
+}
+
+void UCombatComponent::LaunchGrenade()
+{
+	ShowAttachedGrenade(false);
+	if(Character && Character->IsLocallyControlled())
+	{
+		ServerLaunchGrenade(HitTarget);
+	}
+}
+
+void UCombatComponent::ServerLaunchGrenade_Implementation(const FVector_NetQuantize& Target)
+{
+	if(Character && GrenadeClass && Character->GetAttachedGrenade())
+	{
+		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
+		FVector ToTarget = Target - StartingLocation;
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = Character;
+		SpawnParams.Instigator = Character;
+		if(UWorld* World = GetWorld())
+		{
+			World->SpawnActor<AProjectile>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParams);
+		}
+	}
+}
 
 void UCombatComponent::UpdateAmmoValues()
 {
@@ -225,6 +301,14 @@ void UCombatComponent::OnRep_CombatState()
 		if(bIsFiring)
 		{
 			Fire();
+		}
+		break;
+	case ECombatState::ECS_ThrowingGrenade:
+		if(Character && !Character->IsLocallyControlled())
+		{
+			Character->PlayThrowGrenadeMontage();
+			AttachActorToLeftHand(EquippedWeapon);
+			ShowAttachedGrenade(true);
 		}
 		break;
 	}
