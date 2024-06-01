@@ -64,6 +64,66 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(AWeapon, TotalAmmo);
 }
 
+void AWeapon::OnWeaponStateSet()
+{
+	switch (WeaponState)
+	{
+	case EWeaponState::EWS_Equipped:
+		OnEquipped();
+		break;
+	case EWeaponState::EWS_EquippedSecondary:
+		OnEquippedSecondary();
+		break;
+	case EWeaponState::EWS_Dropped:
+		OnDropped();
+		break;
+	}
+}
+
+void AWeapon::OnEquipped()
+{
+	ShowPickupWidget(false);
+    AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    WeaponMesh->SetSimulatePhysics(false);
+    WeaponMesh->SetEnableGravity(false);
+    WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    if(EquipSound)
+    {
+    	UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation());
+    }
+    bCanPlayHitFloorSound = true;
+}
+
+void AWeapon::OnDropped()
+{
+	if(HasAuthority())
+	{
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	WeaponMesh->SetSimulatePhysics(true);
+	WeaponMesh->SetEnableGravity(true);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	if(DropSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, DropSound, GetActorLocation());
+	}
+}
+
+void AWeapon::OnEquippedSecondary()
+{
+	ShowPickupWidget(false);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetSimulatePhysics(false);
+	WeaponMesh->SetEnableGravity(false);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (WeaponType == EWeaponType::EWT_SubmachineGun)
+	{
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		WeaponMesh->SetEnableGravity(true);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	}
+}
+
 void AWeapon::OnRep_Owner()
 {
 	Super::OnRep_Owner();
@@ -74,7 +134,11 @@ void AWeapon::OnRep_Owner()
 	}
 	else
 	{
-		SetHUDAmmo();
+		VBOwnerCharacter = VBOwnerCharacter == nullptr ? Cast<AVBCharacter>(Owner) : VBOwnerCharacter;
+		if(VBOwnerCharacter && VBOwnerCharacter->GetEquippedWeapon() && VBOwnerCharacter->GetEquippedWeapon() == this)
+		{
+			SetHUDAmmo();
+		}
 	}
 }
 
@@ -109,56 +173,12 @@ void AWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitive
 void AWeapon::SetWeaponState(EWeaponState State)
 {
 	WeaponState = State;
-	switch (WeaponState)
-	{
-	case EWeaponState::EWS_Equipped:
-		ShowPickupWidget(false);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WeaponMesh->SetSimulatePhysics(false);
-		WeaponMesh->SetEnableGravity(false);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if(EquipSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation());
-		}
-		bCanPlayHitFloorSound = true;
-		break;
-	case EWeaponState::EWS_Dropped:
-		if(HasAuthority())
-		{
-			AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		}
-		WeaponMesh->SetSimulatePhysics(true);
-		WeaponMesh->SetEnableGravity(true);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		if(DropSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, DropSound, GetActorLocation());
-		}
-		break;
-	}
+	OnWeaponStateSet();
 }
 
 void AWeapon::OnRep_WeaponState()
 {
-	switch (WeaponState)
-	{
-	case EWeaponState::EWS_Equipped:
-		ShowPickupWidget(false);
-		WeaponMesh->SetSimulatePhysics(false);
-		WeaponMesh->SetEnableGravity(false);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		break;
-	case EWeaponState::EWS_Dropped:
-		WeaponMesh->SetSimulatePhysics(true);
-		WeaponMesh->SetEnableGravity(true);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		if(DropSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, DropSound, GetActorLocation());
-		}
-		break;
-	}
+	OnWeaponStateSet();
 }
 
 void AWeapon::Fire(const FVector& HitTarget)

@@ -35,13 +35,17 @@ public:
 	bool bAiming;
 
 	void EquipWeapon(AWeapon* WeaponToEquip);
+	void SwapWeapons();
+	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
 	void DropWeapon();
 	void SetAiming(bool bIsAiming);
 	void FireButtonPressed(bool bPressed);
 	
 	void Reload();
 	void ThrowGrenade();
+	void AttachActorToRightHand(AActor* ActorToAttach);
 	void AttachActorToLeftHand(AActor* ActorToAttach);
+	void AttachActorToBack(AActor* ActorToAttach);
 	void ShowAttachedGrenade(bool bShowGrenade);
 	
 	UFUNCTION(Server, Reliable)
@@ -97,9 +101,16 @@ protected:
 
 	void SetHUDCrosshairs(float DeltaTime);
 
+	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
+	void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
 private:
+	UPROPERTY()
 	AVBCharacter* Character;
+	
+	UPROPERTY()
 	AVBPlayerController* Controller;
+	
+	UPROPERTY()
 	AVBHUD* HUD;
 
 	UPROPERTY(EditAnywhere)
@@ -160,4 +171,6 @@ private:
 
 	UFUNCTION()
 	void OnRep_CombatState();
+
+	bool ShouldSwapWeapons();
 };

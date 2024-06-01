@@ -82,6 +82,45 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if(Character == nullptr || WeaponToEquip == nullptr) return;
+
+	if(EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
+	{
+		EquipSecondaryWeapon(WeaponToEquip);
+	}
+	else
+	{
+		EquipPrimaryWeapon(WeaponToEquip);
+	}
+	
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
+}
+
+void UCombatComponent::SwapWeapons()
+{
+	AWeapon* TempWeapon = EquippedWeapon;
+	EquippedWeapon = SecondaryWeapon;
+	SecondaryWeapon = TempWeapon;
+
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	AttachActorToRightHand(EquippedWeapon);
+	EquippedWeapon->SetHUDAmmo();
+	PlayEquipWeaponSound(EquippedWeapon);
+
+	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
+	AttachActorToBack(SecondaryWeapon);
+}
+
+void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
+{
+	if(WeaponToEquip->EquipSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, WeaponToEquip->EquipSound, WeaponToEquip->GetActorLocation());
+	}
+}
+
+void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
+{
 	if(EquippedWeapon)
 	{
 		EquippedWeapon->Dropped();
@@ -89,22 +128,24 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	CombatState = ECombatState::ECS_Unoccupied;
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-	if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket")))
-	{
-		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
-	}
-	if(EquippedWeapon->EquipSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, EquippedWeapon->EquipSound, EquippedWeapon->GetActorLocation());
-	}
+	AttachActorToRightHand(EquippedWeapon);
+	PlayEquipWeaponSound(EquippedWeapon);
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetHUDAmmo();
 	if(EquippedWeapon->IsEmpty())
 	{
 		Reload();
 	}
-	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-	Character->bUseControllerRotationYaw = true;
+}
+
+void UCombatComponent::EquipSecondaryWeapon(AWeapon* WeaponToEquip)
+{
+	if (WeaponToEquip == nullptr) return;
+	SecondaryWeapon = WeaponToEquip;
+	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
+	SecondaryWeapon->SetOwner(Character);
+	AttachActorToBack(WeaponToEquip);
+	PlayEquipWeaponSound(SecondaryWeapon);
 }
 
 void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
@@ -112,16 +153,11 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 	if(EquippedWeapon && Character)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket")))
-		{
-			HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
-		}
-		if(EquippedWeapon->EquipSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, EquippedWeapon->EquipSound, EquippedWeapon->GetActorLocation());
-		}
+		AttachActorToRightHand(EquippedWeapon);
+		PlayEquipWeaponSound(EquippedWeapon);
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
+		EquippedWeapon->SetHUDAmmo();
 	}
 	if(!EquippedWeapon && Character)
 	{
@@ -143,6 +179,12 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 
 void UCombatComponent::OnRep_SecondaryWeapon(const AWeapon* OldWeapon)
 {
+	if(SecondaryWeapon && Character)
+	{
+		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
+		AttachActorToBack(EquippedWeapon);
+		PlayEquipWeaponSound(EquippedWeapon);
+	}
 }
 
 // Called on the Server from AVBCharacter
@@ -193,11 +235,27 @@ void UCombatComponent::ThrowGrenade()
 	}
 }
 
+void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
+{
+	if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket")))
+	{
+		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
+	}
+}
+
 void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
 {
 	if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("LeftHandSocket")))
 	{
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+	}
+}
+
+void UCombatComponent::AttachActorToBack(AActor* ActorToAttach)
+{
+	if(const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("SecondaryWeaponSocket")))
+	{
+		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
 	}
 }
 
@@ -319,6 +377,11 @@ void UCombatComponent::OnRep_CombatState()
 	}
 }
 
+bool UCombatComponent::ShouldSwapWeapons()
+{
+	return (EquippedWeapon != nullptr && SecondaryWeapon != nullptr);
+}
+
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 {
 	FVector2D ViewportSize;
@@ -421,8 +484,10 @@ void UCombatComponent::Fire()
 		StartFireTimer();
 		if(Character)
 		{
-			APlayerCameraManager* CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
-			CameraManager->StartCameraShake(CameraShakeClass);
+			if(APlayerCameraManager* CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0))
+			{
+				CameraManager->StartCameraShake(CameraShakeClass);
+			}
 		}
 	}
 }

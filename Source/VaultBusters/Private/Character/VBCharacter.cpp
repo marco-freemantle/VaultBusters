@@ -242,16 +242,7 @@ void AVBCharacter::EquipWeapon()
 {
 	if(Combat)
 	{
-		StopAnimMontage(ReloadMontage);
-		if(HasAuthority())
-		{
-			MulticastInterruptReload();
-			Combat->EquipWeapon(OverlappingWeapon);
-		}
-		else
-		{
-			ServerEquipWeapon();
-		}
+		ServerEquipWeapon();
 	}
 }
 
@@ -259,8 +250,16 @@ void AVBCharacter::ServerEquipWeapon_Implementation()
 {
 	if(Combat)
 	{
-		StopAnimMontage(ReloadMontage);
-		Combat->EquipWeapon(OverlappingWeapon);
+		if(OverlappingWeapon)
+		{
+			Combat->EquipWeapon(OverlappingWeapon);
+		}
+		else if (Combat->ShouldSwapWeapons())
+		{
+			StopAnimMontage(ReloadMontage);
+			MulticastInterruptReload();
+			Combat->SwapWeapons();
+		}
 	}
 }
 
@@ -295,6 +294,10 @@ void AVBCharacter::MulticastInterruptReload_Implementation()
 {
 	if(!ReloadMontage) return;
 	StopAnimMontage(ReloadMontage);
+	if(Combat)
+	{
+		Combat->CombatState = ECombatState::ECS_Unoccupied;
+	}
 }
 
 bool AVBCharacter::IsWeaponEquipped() const
