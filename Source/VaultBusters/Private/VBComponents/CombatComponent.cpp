@@ -182,8 +182,8 @@ void UCombatComponent::OnRep_SecondaryWeapon(const AWeapon* OldWeapon)
 	if(SecondaryWeapon && Character)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
-		AttachActorToBack(EquippedWeapon);
-		PlayEquipWeaponSound(EquippedWeapon);
+		AttachActorToBack(SecondaryWeapon);
+		PlayEquipWeaponSound(SecondaryWeapon);
 	}
 }
 
@@ -208,6 +208,11 @@ void UCombatComponent::DropWeapon()
 	Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	Character->GetCharacterMovement()->bOrientRotationToMovement = true;
 	Character->bUseControllerRotationYaw = false;
+	if(SecondaryWeapon)
+	{
+		EquipPrimaryWeapon(SecondaryWeapon);
+		SecondaryWeapon = nullptr;
+	}
 }
 
 void UCombatComponent::Reload()

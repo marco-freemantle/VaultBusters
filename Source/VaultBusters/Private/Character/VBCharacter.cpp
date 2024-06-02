@@ -252,6 +252,11 @@ void AVBCharacter::ServerEquipWeapon_Implementation()
 	{
 		if(OverlappingWeapon)
 		{
+			if(Combat->SecondaryWeapon)
+			{
+				StopAnimMontage(ReloadMontage);
+				MulticastInterruptReload();
+			}
 			Combat->EquipWeapon(OverlappingWeapon);
 		}
 		else if (Combat->ShouldSwapWeapons())
@@ -268,16 +273,8 @@ void AVBCharacter::DropWeapon()
 	if(Combat)
 	{
 		StopAnimMontage(ReloadMontage);
-		if(HasAuthority())
-		{
-			Combat->DropWeapon();
-			MulticastInterruptReload();
-		}
-		else
-		{
-			ServerDropWeapon();
-			GetCharacterMovement()->MaxWalkSpeed = Combat->BaseWalkSpeed;
-		}
+		MulticastInterruptReload();
+		ServerDropWeapon();
 	}
 }
 

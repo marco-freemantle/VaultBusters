@@ -221,7 +221,7 @@ void AWeapon::Dropped()
 	SetWeaponState(EWeaponState::EWS_Dropped);
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	WeaponMesh->DetachFromComponent(DetachRules);
-	if(VBOwnerCharacter->IsLocallyControlled())
+	if(VBOwnerCharacter && VBOwnerCharacter->IsLocallyControlled())
 	{
 		WeaponMesh->SetVisibility(true);
 	}
