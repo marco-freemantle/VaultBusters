@@ -37,6 +37,7 @@ public:
 	void EquipWeapon(AWeapon* WeaponToEquip);
 	void SwapWeapons();
 	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
+	void PlayDropWeaponSound(const AWeapon* WeaponToDrop);
 	void DropWeapon();
 	void SetAiming(bool bIsAiming);
 	void FireButtonPressed(bool bPressed);

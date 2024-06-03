@@ -87,10 +87,6 @@ void AWeapon::OnEquipped()
     WeaponMesh->SetSimulatePhysics(false);
     WeaponMesh->SetEnableGravity(false);
     WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    if(EquipSound)
-    {
-    	UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation());
-    }
     bCanPlayHitFloorSound = true;
 }
 
@@ -103,10 +99,6 @@ void AWeapon::OnDropped()
 	WeaponMesh->SetSimulatePhysics(true);
 	WeaponMesh->SetEnableGravity(true);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	if(DropSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, DropSound, GetActorLocation());
-	}
 }
 
 void AWeapon::OnEquippedSecondary()

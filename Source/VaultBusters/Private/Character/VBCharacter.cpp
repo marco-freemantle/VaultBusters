@@ -134,7 +134,7 @@ void AVBCharacter::SpawnDefaultWeapon()
 	if(VBGameMode && World && !bElimmed && DefaultWeaponClass)
 	{
 		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);
-		StartingWeapon->bDestroyWeapon = true;
+		StartingWeapon->bDestroyWeapon = false;
 		if(Combat)
 		{
 			Combat->EquipWeapon(StartingWeapon);
@@ -309,15 +309,29 @@ bool AVBCharacter::IsAiming() const
 
 void AVBCharacter::Elim()
 {
-	if(Combat && Combat->EquippedWeapon)
+	if(Combat)
 	{
-		if(Combat->EquippedWeapon->bDestroyWeapon)
+		if(Combat->EquippedWeapon)
 		{
-			Combat->EquippedWeapon->Destroy();
+			if(Combat->EquippedWeapon->bDestroyWeapon)
+			{
+				Combat->EquippedWeapon->Destroy();
+			}
+			else
+			{
+				Combat->EquippedWeapon->Dropped();
+			}
 		}
-		else
+		if(Combat->SecondaryWeapon)
 		{
-			DropWeapon();
+			if(Combat->SecondaryWeapon->bDestroyWeapon)
+			{
+				Combat->SecondaryWeapon->Destroy();
+			}
+			else
+			{
+				Combat->SecondaryWeapon->Dropped();
+			}
 		}
 	}
 	MulticastElim();

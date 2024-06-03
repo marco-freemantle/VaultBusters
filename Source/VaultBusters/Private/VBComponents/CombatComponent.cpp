@@ -119,6 +119,14 @@ void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 	}
 }
 
+void UCombatComponent::PlayDropWeaponSound(const AWeapon* WeaponToDrop)
+{
+	if(WeaponToDrop->DropSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, WeaponToDrop->DropSound, WeaponToDrop->GetActorLocation());
+	}
+}
+
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 {
 	if(EquippedWeapon)
@@ -158,14 +166,10 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
 		EquippedWeapon->SetHUDAmmo();
+		SetAiming(false);
 	}
 	if(!EquippedWeapon && Character)
 	{
-		if(OldWeapon && Character->IsLocallyControlled())
-		{
-			OldWeapon->GetWeaponMesh()->SetVisibility(true);
-			Character->ShowSniperScopeWidget(false);
-		}
 		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 		if(Controller)
 		{
@@ -174,16 +178,26 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 		}
 		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
 		Character->bUseControllerRotationYaw = false;
+		if(OldWeapon)
+		{
+			PlayDropWeaponSound(OldWeapon);
+		}
+	}
+	if(OldWeapon && Character && Character->IsLocallyControlled())
+	{
+		OldWeapon->GetWeaponMesh()->SetVisibility(true);
+		Character->ShowSniperScopeWidget(false);
 	}
 }
 
 void UCombatComponent::OnRep_SecondaryWeapon(const AWeapon* OldWeapon)
 {
+	if(!OldWeapon) PlayEquipWeaponSound(SecondaryWeapon);
+
 	if(SecondaryWeapon && Character)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
 		AttachActorToBack(SecondaryWeapon);
-		PlayEquipWeaponSound(SecondaryWeapon);
 	}
 }
 
@@ -196,6 +210,7 @@ void UCombatComponent::DropWeapon()
 		EquippedWeapon->Dropped();
 		EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetFollowCamera()->GetForwardVector() * 600.f, FName(), true);
 		CombatState = ECombatState::ECS_Unoccupied;
+		PlayDropWeaponSound(EquippedWeapon);
 	}
 	Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 	if(Controller)
@@ -210,7 +225,7 @@ void UCombatComponent::DropWeapon()
 	Character->bUseControllerRotationYaw = false;
 	if(SecondaryWeapon)
 	{
-		EquipPrimaryWeapon(SecondaryWeapon);
+		EquipWeapon(SecondaryWeapon);
 		SecondaryWeapon = nullptr;
 	}
 }
