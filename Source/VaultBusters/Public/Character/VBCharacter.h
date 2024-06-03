@@ -34,6 +34,7 @@ public:
 	void PlayHitReactMontage();
 	void PlayReloadMontage();
 	void PlayThrowGrenadeMontage();
+	void PlaySwapWeaponsMontage();
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 
@@ -118,6 +119,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category=Combat)
 	UAnimMontage* ThrowGrenadeMontage;
+
+	UPROPERTY(EditAnywhere, Category=Combat)
+	UAnimMontage* SwapWeaponsMontage;
 
 	void HideCameraIfCharacterClose();
 

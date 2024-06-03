@@ -98,17 +98,18 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 void UCombatComponent::SwapWeapons()
 {
-	AWeapon* TempWeapon = EquippedWeapon;
-	EquippedWeapon = SecondaryWeapon;
-	SecondaryWeapon = TempWeapon;
-
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-	AttachActorToRightHand(EquippedWeapon);
-	EquippedWeapon->SetHUDAmmo();
-	PlayEquipWeaponSound(EquippedWeapon);
-
-	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
-	AttachActorToBack(SecondaryWeapon);
+	CombatState = ECombatState::ECS_SwappingWeapons;
+	if(Character)
+	{
+		Character->PlaySwapWeaponsMontage();
+	}
+	FTimerHandle SwapWeaponDelayTimer;
+	Character->GetWorldTimerManager().SetTimer(SwapWeaponDelayTimer, [this]()
+	{
+		AWeapon* TempWeapon = EquippedWeapon;
+		EquippedWeapon = SecondaryWeapon;
+		SecondaryWeapon = TempWeapon;
+	}, 0.5f, false);
 }
 
 void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
@@ -162,7 +163,10 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 		AttachActorToRightHand(EquippedWeapon);
-		PlayEquipWeaponSound(EquippedWeapon);
+		if(!SecondaryWeapon)
+		{
+			PlayEquipWeaponSound(EquippedWeapon);
+		}
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
 		EquippedWeapon->SetHUDAmmo();
@@ -176,6 +180,7 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 			Controller->SetHUDWeaponAmmo(0);
 			Controller->SetHUDWeaponTotalAmmo(0);
 		}
+		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
 		Character->bUseControllerRotationYaw = false;
 		if(OldWeapon)
@@ -333,6 +338,25 @@ void UCombatComponent::FinishThrowGrenade()
 	}
 }
 
+void UCombatComponent::FinishSwapWeapons()
+{
+	if(Character && Character->HasAuthority())
+	{
+		CombatState = ECombatState::ECS_Unoccupied;
+	}
+}
+
+void UCombatComponent::FinishSwapAttachWeapon()
+{
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	AttachActorToRightHand(EquippedWeapon);
+	EquippedWeapon->SetHUDAmmo();
+	PlayEquipWeaponSound(EquippedWeapon);
+
+	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
+	AttachActorToBack(SecondaryWeapon);
+}
+
 void UCombatComponent::LaunchGrenade()
 {
 	ShowAttachedGrenade(false);
@@ -392,6 +416,12 @@ void UCombatComponent::OnRep_CombatState()
 			Character->PlayThrowGrenadeMontage();
 			AttachActorToLeftHand(EquippedWeapon);
 			ShowAttachedGrenade(true);
+		}
+		break;
+	case ECombatState::ECS_SwappingWeapons:
+		if(Character && !Character->IsLocallyControlled())
+		{
+			Character->PlaySwapWeaponsMontage();
 		}
 		break;
 	}

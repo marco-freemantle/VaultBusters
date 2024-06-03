@@ -211,6 +211,15 @@ void AVBCharacter::PlayThrowGrenadeMontage()
 	}
 }
 
+void AVBCharacter::PlaySwapWeaponsMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && SwapWeaponsMontage)
+	{
+		AnimInstance->Montage_Play(SwapWeaponsMontage);
+	}
+}
+
 void AVBCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
 	if(OverlappingWeapon && IsLocallyControlled())
@@ -242,7 +251,12 @@ void AVBCharacter::EquipWeapon()
 {
 	if(Combat)
 	{
-		ServerEquipWeapon();
+		if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipWeapon();
+		if (Combat->ShouldSwapWeapons() && !HasAuthority() && Combat->CombatState == ECombatState::ECS_Unoccupied && OverlappingWeapon == nullptr)
+		{
+			Combat->CombatState = ECombatState::ECS_SwappingWeapons;
+			PlaySwapWeaponsMontage();
+		}
 	}
 }
 
@@ -284,6 +298,7 @@ void AVBCharacter::ServerDropWeapon_Implementation()
 	{
 		Combat->DropWeapon();
 		StopAnimMontage(ReloadMontage);
+		MulticastInterruptReload();
 	}
 }
 
