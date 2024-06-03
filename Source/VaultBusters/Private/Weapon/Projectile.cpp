@@ -50,8 +50,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	AVBCharacter* PlayerHit = Cast<AVBCharacter>(OtherActor);
 
 	bHitFlesh = PlayerHit != nullptr;
+	bool bWasHeadShot = Hit.BoneName.ToString() == FString("head");
 
-	MulticastPlayHitEffects(bHitFlesh);
+	MulticastPlayHitEffects(bHitFlesh, bWasHeadShot);
 
 	FTimerHandle DestroyTimerHandle;
 	GetWorldTimerManager().SetTimer(DestroyTimerHandle, this, &ThisClass::DelayedDestroy, 0.05f, false);
@@ -59,7 +60,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	bHasHitSomething = true;
 }
 
-void AProjectile::MulticastPlayHitEffects_Implementation(bool bFleshHit)
+void AProjectile::MulticastPlayHitEffects_Implementation(bool bFleshHit, bool bWasHeadShot)
 {
 	if (bFleshHit)
 	{

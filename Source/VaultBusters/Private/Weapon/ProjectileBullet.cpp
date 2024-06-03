@@ -17,13 +17,26 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		AVBPlayerController* OwnerController = Cast<AVBPlayerController>(OwnerCharacter->Controller);
 		if(OwnerController)
 		{
-			UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
-			if(Cast<AVBCharacter>(OtherActor))
+			bool bWasHeadShot = Hit.BoneName.ToString() == FString("head");
+			const float DamageToCause = bWasHeadShot ? HeadShotDamage : Damage;
+			
+			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, OwnerController, this, UDamageType::StaticClass());
+			if(AVBCharacter* DamageReceiver = Cast<AVBCharacter>(OtherActor))
 			{
 				OwnerController->ClientSetHUDImpactCrosshair();
-				OwnerController->ClientPlayHitGiven();
+				if(!bWasHeadShot)
+				{
+					OwnerController->ClientPlayHitGiven();
+				}
+				else
+				{
+					OwnerController->ClientPlayHeadshotGiven();
+				}
 
-				//TODO: Play headshot given sound for local player
+				if(DamageReceiver)
+				{
+					DamageReceiver->MulticastPlayHitReceived(bWasHeadShot);
+				}
 			}
 		}
 	}

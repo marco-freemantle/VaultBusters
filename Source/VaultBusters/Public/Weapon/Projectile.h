@@ -28,12 +28,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float Damage = 20.f;
 
+	UPROPERTY(EditAnywhere)
+	float HeadShotDamage = 40.f;
+
 	bool bHitFlesh;
 
 	bool bHasHitSomething;
 
 	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastPlayHitEffects(bool bFleshHit);
+	void MulticastPlayHitEffects(bool bFleshHit, bool bWasHeadShot);
 
 	void DelayedDestroy();
 

@@ -454,7 +454,6 @@ void AVBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	UpdateHUDHealth();
 	UpdateHUDShield();
 	PlayHitReactMontage();
-	MulticastPlayHitReceived(false);
 
 	if(Health != 0.f) return;
 	AVBGameMode* VBGameMode = GetWorld()->GetAuthGameMode<AVBGameMode>();
