@@ -17,8 +17,22 @@ class VAULTBUSTERS_API AVBGameState : public AGameState
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	void UpdateTopScore(AVBPlayerState* ScoringPlayer);
+
+	void AttackingTeamScores();
+	void DefendingTeamScores();
 	
-	UPROPERTY(Replicated)
-	TArray<AVBPlayerState*> TopScoringPlayers;
+	TArray<AVBPlayerState*> AttackingTeam;
+	TArray<AVBPlayerState*> DefendingTeam;
+
+	UPROPERTY(ReplicatedUsing=OnRep_AttackingTeamScore)
+	float AttackingTeamScore = 0.f;
+	
+	UPROPERTY(ReplicatedUsing=OnRep_DefendingTeamScore)
+	float DefendingTeamScore = 0.f;
+
+	UFUNCTION()
+	void OnRep_AttackingTeamScore();
+
+	UFUNCTION()
+	void OnRep_DefendingTeamScore();
 };

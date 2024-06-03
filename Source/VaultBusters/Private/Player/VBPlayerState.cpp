@@ -1,8 +1,6 @@
 // Copyright Marco Freemantle
 
-
 #include "Player/VBPlayerState.h"
-
 #include "Character/VBCharacter.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/VBPlayerController.h"
@@ -13,6 +11,7 @@ void AVBPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(AVBPlayerState, Kills);
 	DOREPLIFETIME(AVBPlayerState, Deaths);
+	DOREPLIFETIME(AVBPlayerState, Team);
 }
 
 void AVBPlayerState::AddToScore(float ScoreAmount)
@@ -95,5 +94,23 @@ void AVBPlayerState::OnRep_Deaths()
 		{
 			Controller->SetHUDDeaths(Deaths);
 		}
+	}
+}
+
+void AVBPlayerState::SetTeam(ETeam TeamToSet)
+{
+	Team = TeamToSet;
+
+	if(AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetPawn()))
+	{
+		VBCharacter->SetTeamMesh(Team);
+	}
+}
+
+void AVBPlayerState::OnRep_Team()
+{
+	if(AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetPawn()))
+	{
+		VBCharacter->SetTeamMesh(Team);
 	}
 }

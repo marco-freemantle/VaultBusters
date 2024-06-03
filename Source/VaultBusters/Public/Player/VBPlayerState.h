@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
+#include "VBTypes/Team.h"
 #include "VBPlayerState.generated.h"
 
 class AVBPlayerController;
@@ -44,8 +45,16 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Deaths)
 	int32 Deaths;
 
+	UPROPERTY(ReplicatedUsing = OnRep_Team)
+	ETeam Team = ETeam::ET_NoTeam;
+
+	UFUNCTION()
+	void OnRep_Team();
+
 public:
 	FORCEINLINE int32 GetKills() const { return Kills; }
 	FORCEINLINE int32 GetDeaths() const { return Deaths; }
+	FORCEINLINE ETeam GetTeam() const { return Team; }
+	void SetTeam(ETeam TeamToSet);
 };
 

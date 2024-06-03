@@ -126,6 +126,7 @@ void AVBPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AVBPlayerController, MatchState);
+	DOREPLIFETIME(AVBPlayerController, bShowTeamScores);
 }
 
 void AVBPlayerController::InterpCameraCrouch(float DeltaTime)
@@ -491,6 +492,47 @@ void AVBPlayerController::SetHUDAnnouncementCountdown(float CountDownTime)
 	}
 }
 
+void AVBPlayerController::SetHUDAttackingTeamScore(int32 AttackingTeamScore)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->AttackingTeamScore)
+	{
+		FString ScoreText = FString::Printf(TEXT("%d"), AttackingTeamScore);
+		VBHUD->CharacterOverlay->AttackingTeamScore->SetText(FText::FromString(ScoreText));
+	}
+}
+
+void AVBPlayerController::SetHUDDefendingTeamScore(int32 DefendingTeamScore)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->DefendingTeamScore)
+	{
+		FString ScoreText = FString::Printf(TEXT("%d"), DefendingTeamScore);
+		VBHUD->CharacterOverlay->DefendingTeamScore->SetText(FText::FromString(ScoreText));
+	}
+}
+
+void AVBPlayerController::InitTeamScores()
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->AttackingTeamScore && VBHUD->CharacterOverlay->DefendingTeamScore)
+	{
+		FString Zero("0");
+		VBHUD->CharacterOverlay->AttackingTeamScore->SetText(FText::FromString(Zero));
+		VBHUD->CharacterOverlay->DefendingTeamScore->SetText(FText::FromString(Zero));
+	}
+}
+
+void AVBPlayerController::HideTeamScores()
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->AttackingTeamScore && VBHUD->CharacterOverlay->DefendingTeamScore)
+	{
+		VBHUD->CharacterOverlay->AttackingTeamScore->SetText(FText());
+		VBHUD->CharacterOverlay->DefendingTeamScore->SetText(FText());
+	}
+}
+
 void AVBPlayerController::SetHUDTime()
 {
 	float TimeLeft = 0.f;
@@ -690,13 +732,13 @@ void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPl
 	}
 }
 
-void AVBPlayerController::OnMatchStateSet(FName State)
+void AVBPlayerController::OnMatchStateSet(FName State, bool bTeamsMatch)
 {
 	MatchState = State;
 	
 	if(MatchState == MatchState::InProgress)
 	{
-		HandleMatchHasStarted();
+		HandleMatchHasStarted(bTeamsMatch);
 	}
 	else if (MatchState == MatchState::Cooldown)
 	{
@@ -716,8 +758,9 @@ void AVBPlayerController::OnRep_MatchState()
 	}
 }
 
-void AVBPlayerController::HandleMatchHasStarted()
+void AVBPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 {
+	if(HasAuthority()) bShowTeamScores = bTeamsMatch;
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
 	if(VBHUD)
 	{
@@ -726,6 +769,15 @@ void AVBPlayerController::HandleMatchHasStarted()
 		if(VBHUD->Announcement)
 		{
 			VBHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+		}
+		if(!HasAuthority()) return;
+		if(bTeamsMatch)
+		{
+			InitTeamScores();
+		}
+		else
+		{
+			HideTeamScores();
 		}
 	}
 }
@@ -750,6 +802,18 @@ void AVBPlayerController::HandleCooldown()
 		}
 	}
 	DisableInput(this);
+}
+
+void AVBPlayerController::OnRep_ShowTeamScores()
+{
+	if(bShowTeamScores)
+	{
+		InitTeamScores();
+	}
+	else
+	{
+		HideTeamScores();
+	}
 }
 
 void AVBPlayerController::ServerCheckMatchState_Implementation()

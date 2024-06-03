@@ -50,6 +50,12 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MatchCountDownText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* AttackingTeamScore;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* DefendingTeamScore;
 	
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* Killfeeds;

@@ -115,6 +115,7 @@ void AVBCharacter::PollInit()
 		VBPlayerState = GetPlayerState<AVBPlayerState>();
 		if(VBPlayerState)
 		{
+			SetTeamMesh(VBPlayerState->GetTeam());
 			VBPlayerState->AddToScore(0.f);
 			VBPlayerState->AddToDeaths(0);
 			VBPlayerState->AddToKills(0);
@@ -129,7 +130,7 @@ void AVBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AVBCharacter::SpawnDefaultWeapon()
 {
-	AVBGameMode* VBGameMode = Cast<AVBGameMode>(UGameplayStatics::GetGameMode(this));
+	VBGameMode = VBGameMode == nullptr ? GetWorld()->GetAuthGameMode<AVBGameMode>() : VBGameMode;
 	UWorld* World = GetWorld();
 	if(VBGameMode && World && !bElimmed && DefaultWeaponClass)
 	{
@@ -139,6 +140,21 @@ void AVBCharacter::SpawnDefaultWeapon()
 		{
 			Combat->EquipWeapon(StartingWeapon);
 		}
+	}
+}
+
+void AVBCharacter::SetTeamMesh(ETeam Team)
+{
+	switch (Team)
+	{
+	case ETeam::ET_AttackingTeam:
+		GetMesh()->SetSkeletalMesh(AttackingTeamMesh);
+		break;
+	case ETeam::ET_DefendingTeam:
+		GetMesh()->SetSkeletalMesh(DefendingTeamMesh);
+		break;
+	case ETeam::ET_NoTeam:
+		break;
 	}
 }
 
@@ -371,6 +387,7 @@ void AVBCharacter::MulticastElim_Implementation()
 		DisableInput(VBPlayerController);
 	}
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	if(Combat && Combat->InvalidHitActor)
 	{
@@ -385,7 +402,7 @@ void AVBCharacter::MulticastElim_Implementation()
 
 void AVBCharacter::ElimTimerFinished()
 {
-	AVBGameMode* VBGameMode = GetWorld()->GetAuthGameMode<AVBGameMode>();
+	VBGameMode = VBGameMode == nullptr ? GetWorld()->GetAuthGameMode<AVBGameMode>() : VBGameMode;
 	if(VBGameMode)
 	{
 		VBGameMode->RequestRespawn(this, Controller);
@@ -433,8 +450,10 @@ void AVBCharacter::AimOffset(float DeltaTime)
 void AVBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatorController, AActor* DamageCauser)
 {
-	if (bElimmed) return;
-
+	VBGameMode = VBGameMode == nullptr ? GetWorld()->GetAuthGameMode<AVBGameMode>() : VBGameMode;
+	if (bElimmed || VBGameMode == nullptr) return;
+	Damage = VBGameMode->CalculateDamage(InstigatorController, Controller, Damage);
+	
 	float DamageToHealth = Damage;
 	if(Shield > 0.f)
 	{
@@ -456,7 +475,6 @@ void AVBCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	PlayHitReactMontage();
 
 	if(Health != 0.f) return;
-	AVBGameMode* VBGameMode = GetWorld()->GetAuthGameMode<AVBGameMode>();
 	if(VBGameMode)
 	{
 		VBPlayerController = VBPlayerController == nullptr ? Cast<AVBPlayerController>(Controller) : VBPlayerController;

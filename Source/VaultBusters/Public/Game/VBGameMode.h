@@ -9,7 +9,7 @@
 
 namespace MatchState
 {
-	extern VAULTBUSTERS_API const FName Cooldown; //  Match duration has been reached. Display winner and being cooldown timer; 
+	extern VAULTBUSTERS_API const FName Cooldown; //  Match duration has been reached. Display winner and being cooldown timer.
 }
 
 USTRUCT(BlueprintType)
@@ -44,6 +44,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PlayerEliminated(AVBCharacter* ElimmedCharacter, AVBPlayerController* VictimController, AVBPlayerController* AttackerController);
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
+	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage);
 
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 10.f;
@@ -55,6 +56,8 @@ public:
 	float CooldownTime = 10.f;
 
 	float LevelStartingTime = 0.f;
+
+	bool bTeamsMatch = false;
 
 protected:
 	virtual void PostLogin(APlayerController* NewPlayer) override;

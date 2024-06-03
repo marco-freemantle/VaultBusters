@@ -87,7 +87,7 @@ void AVBGameMode::OnMatchStateSet()
 	{
 		if(AVBPlayerController* VBPlayer = Cast<AVBPlayerController>(*It))
 		{
-			VBPlayer->OnMatchStateSet(MatchState);
+			VBPlayer->OnMatchStateSet(MatchState, bTeamsMatch);
 		}
 	}
 }
@@ -145,6 +145,11 @@ void AVBGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* Elim
 		int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
 		RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
 	}
+}
+
+float AVBGameMode::CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage)
+{
+	return BaseDamage;
 }
 
 void AVBGameMode::UpdateScoreboards()

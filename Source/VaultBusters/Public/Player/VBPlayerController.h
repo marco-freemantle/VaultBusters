@@ -39,6 +39,11 @@ public:
 	void SetHUDMatchCountDown(float CountDownTime);
 	void SetHUDAnnouncementCountdown(float CountDownTime);
 
+	void SetHUDAttackingTeamScore(int32 AttackingTeamScore);
+	void SetHUDDefendingTeamScore(int32 DefendingTeamScore);
+	void InitTeamScores();
+	void HideTeamScores();
+
 	virtual float GetServerTime(); //Synced with server world clock
 	virtual void ReceivedPlayer() override; //Sync with server clock as soon as possible
 
@@ -84,13 +89,13 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateScoreboard(const TArray<FPlayerInfo>& PlayerInfoArray);
 
-	void OnMatchStateSet(FName State);
+	void OnMatchStateSet(FName State, bool bTeamsMatch = false);
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	void PollInit();
-	void HandleMatchHasStarted();
+	void HandleMatchHasStarted(bool bTeamsMatch = false);
 	void HandleCooldown();
 
 	UFUNCTION(Server, Reliable)
@@ -98,6 +103,12 @@ protected:
 
 	UFUNCTION(Client, Reliable)
 	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
+
+	UPROPERTY(ReplicatedUsing=OnRep_ShowTeamScores)
+	bool bShowTeamScores = false;
+
+	UFUNCTION()
+	void OnRep_ShowTeamScores();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Input")

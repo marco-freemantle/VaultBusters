@@ -7,8 +7,10 @@
 #include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "VBTypes/TurningInPlace.h"
 #include "VBTypes/CombatState.h"
+#include "VBTypes/Team.h"
 #include "VBCharacter.generated.h"
 
+class AVBGameMode;
 class AVBPlayerState;
 class AVBPlayerController;
 class USpringArmComponent;
@@ -57,6 +59,8 @@ public:
 
 	void SpawnDefaultWeapon();
 
+	void SetTeamMesh(ETeam Team);
+
 protected:
 	virtual void BeginPlay() override;
 	void AimOffset(float DeltaTime);
@@ -75,6 +79,12 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	AWeapon* OverlappingWeapon;
+
+	UPROPERTY(EditAnywhere)
+	USkeletalMesh* AttackingTeamMesh;
+	
+	UPROPERTY(EditAnywhere)
+	USkeletalMesh* DefendingTeamMesh;
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
@@ -161,6 +171,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AWeapon> DefaultWeaponClass;
+
+	UPROPERTY()
+	AVBGameMode* VBGameMode;
 
 public:
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
