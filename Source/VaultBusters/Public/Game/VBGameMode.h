@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/VBCharacter.h"
 #include "GameFramework/GameMode.h"
+#include "VBTypes/Team.h"
 #include "VBGameMode.generated.h"
 
 namespace MatchState
@@ -29,6 +30,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	FString DeathsText;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString PlayerTeam;
 };
 
 /**

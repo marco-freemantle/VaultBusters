@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "HUD/VBHUD.h"
+#include "VBTypes/Team.h"
 #include "VBPlayerController.generated.h"
 
+struct FPlayerInfo;
 class UScoreboard;
 class AVBGameMode;
 class UCharacterOverlay;
@@ -90,6 +93,8 @@ public:
 	void ClientUpdateScoreboard(const TArray<FPlayerInfo>& PlayerInfoArray);
 
 	void OnMatchStateSet(FName State, bool bTeamsMatch = false);
+
+	ETeam GetPlayerTeam();
 
 protected:
 	virtual void BeginPlay() override;

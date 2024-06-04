@@ -162,6 +162,23 @@ void AVBGameMode::UpdateScoreboards()
 		NewPlayerInfo.ScoreText = PlayerController->PlayerState ? FString::Printf(TEXT("%d"), FMath::RoundToInt(Cast<AVBPlayerState>(PlayerController->PlayerState)->GetScore())) : FString(TEXT("N/A"));
 		NewPlayerInfo.KillsText = PlayerController->PlayerState ? FString::Printf(TEXT("%d"), Cast<AVBPlayerState>(PlayerController->PlayerState)->GetKills()) : FString(TEXT("N/A"));
 		NewPlayerInfo.DeathsText = PlayerController->PlayerState ? FString::Printf(TEXT("%d"), Cast<AVBPlayerState>(PlayerController->PlayerState)->GetDeaths()) : FString(TEXT("N/A"));
+		FString TeamText;
+		if(AVBPlayerState* PlayerState = Cast<AVBPlayerState>(PlayerController->PlayerState))
+		{
+			switch (PlayerState->GetTeam())
+			{
+			case ETeam::ET_NoTeam:
+				TeamText = FString(TEXT("NoTeam"));
+				break;
+			case ETeam::ET_AttackingTeam:
+				TeamText = FString(TEXT("AttackingTeam"));
+				break;
+			case ETeam::ET_DefendingTeam:
+				TeamText = FString(TEXT("DefendingTeam"));
+				break;
+			}
+		}
+		NewPlayerInfo.PlayerTeam = TeamText;
 		PlayerInfoArray.Add(NewPlayerInfo);
 	}
 

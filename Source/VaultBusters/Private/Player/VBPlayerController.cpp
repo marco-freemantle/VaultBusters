@@ -18,9 +18,11 @@
 #include "HUD/Announcement.h"
 #include "HUD/CharacterOverlay.h"
 #include "HUD/Scoreboard.h"
+#include "HUD/TeamScoreboard.h"
 #include "Input/VBInputComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/VBPlayerState.h"
 #include "VBComponents/CombatComponent.h"
 #include "Weapon/Weapon.h"
 
@@ -698,11 +700,12 @@ void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPl
 	CachedPlayerInfoArray = PlayerInfoArray;
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
 	
-	if (VBHUD && VBHUD->Scoreboard)
+	UTeamScoreboard* TeamScoreboard = Cast<UTeamScoreboard>(VBHUD->Scoreboard);
+
+	// Not a team scoreboard
+	if (VBHUD && VBHUD->Scoreboard && !TeamScoreboard)
 	{
-		// Clear existing items from the scoreboard
 		VBHUD->Scoreboard->ScoreList->ClearChildren();
-	
 		for (const FPlayerInfo& PlayerInfo : PlayerInfoArray)
 		{
 			FString DisplayName = PlayerInfo.DisplayName;
@@ -725,6 +728,46 @@ void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPl
 						PlayerDeathsText->SetText(FText::FromString(PlayerInfo.DeathsText));
 	
 						VBHUD->Scoreboard->ScoreList->AddChild(ScoreboardItemWidget);
+					}
+				}
+			}
+		}
+	}
+	// Is a team scoreboard
+	if (VBHUD && VBHUD->Scoreboard && TeamScoreboard)
+	{
+		TeamScoreboard->AttackingTeamScoreList->ClearChildren();
+		TeamScoreboard->DefendingTeamScoreList->ClearChildren();
+		for (const FPlayerInfo& PlayerInfo : PlayerInfoArray)
+		{
+			FString DisplayName = PlayerInfo.DisplayName;
+			if (ScoreboardItemClass)
+			{
+				UUserWidget* ScoreboardItemWidget = CreateWidget<UUserWidget>(this, ScoreboardItemClass);
+				if (UWidgetTree* WidgetTree = ScoreboardItemWidget->WidgetTree)
+				{
+					UTextBlock* PlayerNameText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerNameText"));
+					UTextBlock* PlayerScoreText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerScoreText"));
+					UTextBlock* PlayerElimsText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerElimsText"));
+					UTextBlock* PlayerDeathsText = WidgetTree->FindWidget<UTextBlock>(TEXT("PlayerDeathsText"));
+					
+	
+					if (PlayerNameText && PlayerScoreText && PlayerElimsText && PlayerDeathsText)
+					{
+						PlayerNameText->SetText(FText::FromString(DisplayName));
+						PlayerScoreText->SetText(FText::FromString(PlayerInfo.ScoreText));
+						PlayerElimsText->SetText(FText::FromString(PlayerInfo.KillsText));
+						PlayerDeathsText->SetText(FText::FromString(PlayerInfo.DeathsText));
+
+						if(PlayerInfo.PlayerTeam == FString("AttackingTeam"))
+						{
+							TeamScoreboard->AttackingTeamScoreList->AddChild(ScoreboardItemWidget);
+						}
+						if(PlayerInfo.PlayerTeam == FString("DefendingTeam"))
+						{
+							TeamScoreboard->DefendingTeamScoreList->AddChild(ScoreboardItemWidget);
+						}
+						//VBHUD->Scoreboard->ScoreList->AddChild(ScoreboardItemWidget);
 					}
 				}
 			}
@@ -765,7 +808,14 @@ void AVBPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 	if(VBHUD)
 	{
 		if(VBHUD->CharacterOverlay == nullptr) VBHUD->AddCharacterOverlay();
-		if(VBHUD->Scoreboard == nullptr) VBHUD->AddScoreboard();
+		if(bTeamsMatch)
+		{
+			if(VBHUD->Scoreboard == nullptr) VBHUD->AddTeamScoreboard();
+		}
+		else
+		{
+			if(VBHUD->Scoreboard == nullptr) VBHUD->AddScoreboard();
+		}
 		if(VBHUD->Announcement)
 		{
 			VBHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
@@ -809,6 +859,8 @@ void AVBPlayerController::OnRep_ShowTeamScores()
 	if(bShowTeamScores)
 	{
 		InitTeamScores();
+		VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+		if(VBHUD) VBHUD->AddTeamScoreboard();
 	}
 	else
 	{
@@ -848,3 +900,17 @@ void AVBPlayerController::ClientJoinMidGame_Implementation(FName StateOfMatch, f
 		VBHUD->AddAnnouncement();
 	}
 }
+
+ETeam AVBPlayerController::GetPlayerTeam()
+{
+	if(VBOwnerCharacter)
+	{
+		AVBPlayerState* VBOwnerPlayerState = Cast<AVBPlayerState>(VBOwnerCharacter->GetPlayerState());
+		if(VBOwnerPlayerState)
+		{
+			return VBOwnerPlayerState->GetTeam();
+		}
+	}
+	return ETeam::ET_NoTeam;
+}
+

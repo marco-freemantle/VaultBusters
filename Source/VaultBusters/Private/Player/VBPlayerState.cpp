@@ -2,6 +2,8 @@
 
 #include "Player/VBPlayerState.h"
 #include "Character/VBCharacter.h"
+#include "Game/VBGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/VBPlayerController.h"
 

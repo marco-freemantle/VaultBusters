@@ -8,6 +8,8 @@
 
 class UAnnouncement;
 class UCharacterOverlay;
+class UScoreboard;
+class UUserWidget;
 
 USTRUCT(BlueprintType)
 struct  FHUDPackage
@@ -43,9 +45,13 @@ public:
 	UCharacterOverlay* CharacterOverlay;
 
 	UPROPERTY(EditAnywhere, Category = "Player stats")
-	TSubclassOf<class UUserWidget> CharacterScoreboardClass;
+	TSubclassOf<UUserWidget> CharacterScoreboardClass;
 
-	class UScoreboard* Scoreboard;
+	UPROPERTY(EditAnywhere, Category = "Player stats")
+	TSubclassOf<UUserWidget> CharacterTeamScoreboardClass;
+
+	UPROPERTY()
+	UScoreboard* Scoreboard;
 
 	UPROPERTY(EditAnywhere, Category="Announcements")
 	TSubclassOf<UUserWidget> AnnouncementClass;
@@ -55,6 +61,7 @@ public:
 
 	void AddCharacterOverlay();
 	void AddScoreboard();
+	void AddTeamScoreboard();
 	void AddAnnouncement();
 
 protected:

@@ -6,14 +6,15 @@
 #include "HUD/Announcement.h"
 #include "HUD/CharacterOverlay.h"
 #include "HUD/Scoreboard.h"
+#include "Player/VBPlayerController.h"
 
 void AVBHUD::DrawHUD()
 {
 	Super::DrawHUD();
 
-	FVector2D ViewportSize;
 	if(GEngine)
 	{
+		FVector2D ViewportSize;
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
 		const FVector2D ViewportCentre(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
 
@@ -64,11 +65,23 @@ void AVBHUD::AddCharacterOverlay()
 
 void AVBHUD::AddScoreboard()
 {
-	APlayerController* PlayerController = GetOwningPlayerController();
-
+	AVBPlayerController* PlayerController = Cast<AVBPlayerController>(GetOwningPlayerController());
 	if (PlayerController && CharacterScoreboardClass)
 	{
+		if(Scoreboard) Scoreboard->RemoveFromParent();
 		Scoreboard = CreateWidget<UScoreboard>(PlayerController, CharacterScoreboardClass);
+		Scoreboard->AddToViewport();
+		Scoreboard->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void AVBHUD::AddTeamScoreboard()
+{
+	AVBPlayerController* PlayerController = Cast<AVBPlayerController>(GetOwningPlayerController());
+	if (PlayerController && CharacterTeamScoreboardClass)
+	{
+		if(Scoreboard) Scoreboard->RemoveFromParent();
+		Scoreboard = CreateWidget<UScoreboard>(PlayerController, CharacterTeamScoreboardClass);
 		Scoreboard->AddToViewport();
 		Scoreboard->SetVisibility(ESlateVisibility::Hidden);
 	}

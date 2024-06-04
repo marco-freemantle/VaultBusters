@@ -11,24 +11,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a5dcea6c-be5f-458b-b394-3f57cc1632cc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/VBTypes/Team.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Animation/VBAnimBP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Animation/VBAnimBP.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_TeamsGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_TeamsGameMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/BP_VBHUD.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/BP_VBHUD.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/WBP_CharacterOverlay.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/WBP_CharacterOverlay.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBPlayerController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBPlayerController.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/TestMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameMode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameState.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/HUD/VBHUD.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/HUD/VBHUD.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerState.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Character/VBCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Character/VBCharacter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Game/VBGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Game/VBGameMode.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Game/VBGameState.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Game/VBGameState.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/CharacterOverlay.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/CharacterOverlay.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/VBHUD.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/VBHUD.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerState.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerState.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +54,7 @@
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameUserSettings.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/HUD/Announcement.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/HUD/Scoreboard.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/HUD/TeamScoreboard.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/HUD/VBHUD.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/Input/VBInputComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Private/Interfaces/InteractWithCrosshairsInterface.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -80,6 +76,7 @@
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Public/Game/VBGameUserSettings.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Public/HUD/Announcement.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Public/HUD/Scoreboard.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Public/HUD/TeamScoreboard.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Public/HUD/VBHUD.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Public/Input/VBInputComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/VaultBusters/Public/Interfaces/InteractWithCrosshairsInterface.h" root0="FORCE_HIGHLIGHTING" />
@@ -316,7 +313,8 @@
       <workItem from="1717333242399" duration="59000" />
       <workItem from="1717333344673" duration="2604000" />
       <workItem from="1717400822761" duration="6550000" />
-      <workItem from="1717413087559" duration="11062000" />
+      <workItem from="1717413087559" duration="11399000" />
+      <workItem from="1717499597558" duration="5702000" />
     </task>
     <servers />
   </component>
