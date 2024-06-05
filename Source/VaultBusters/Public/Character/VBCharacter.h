@@ -62,6 +62,8 @@ public:
 
 	void SetTeamMesh(ETeam Team);
 
+	void SwapWeapons();
+
 protected:
 	virtual void BeginPlay() override;
 	void AimOffset(float DeltaTime);
@@ -110,6 +112,9 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerDropWeapon();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSwapWeapons();
 
 	float AO_Yaw;
 	float InterpAO_Yaw;

@@ -265,16 +265,31 @@ void AVBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	}
 }
 
+void AVBCharacter::SwapWeapons()
+{
+	if (Combat->ShouldSwapWeapons() && !HasAuthority() && OverlappingWeapon == nullptr)
+	{
+		Combat->CombatState = ECombatState::ECS_SwappingWeapons;
+		PlaySwapWeaponsMontage();
+	}
+	ServerSwapWeapons();
+}
+
+void AVBCharacter::ServerSwapWeapons_Implementation()
+{
+	if (Combat && Combat->ShouldSwapWeapons())
+	{
+		StopAnimMontage(ReloadMontage);
+		MulticastInterruptReload();
+		Combat->SwapWeapons();
+	}
+}
+
 void AVBCharacter::EquipWeapon()
 {
 	if(Combat)
 	{
 		if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipWeapon();
-		if (Combat->ShouldSwapWeapons() && !HasAuthority() && Combat->CombatState == ECombatState::ECS_Unoccupied && OverlappingWeapon == nullptr)
-		{
-			Combat->CombatState = ECombatState::ECS_SwappingWeapons;
-			PlaySwapWeaponsMontage();
-		}
 	}
 }
 
@@ -290,12 +305,6 @@ void AVBCharacter::ServerEquipWeapon_Implementation()
 				MulticastInterruptReload();
 			}
 			Combat->EquipWeapon(OverlappingWeapon);
-		}
-		else if (Combat->ShouldSwapWeapons())
-		{
-			StopAnimMontage(ReloadMontage);
-			MulticastInterruptReload();
-			Combat->SwapWeapons();
 		}
 	}
 }

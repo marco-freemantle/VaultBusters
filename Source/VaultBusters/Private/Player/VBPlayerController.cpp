@@ -261,20 +261,37 @@ void AVBPlayerController::SwapWeapons(const FInputActionValue& InputActionValue)
 {
 	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
 	{
-		if(VBCharacter->GetCombatComponent())
-		{
-			if(VBCharacter->GetCombatComponent()->ShouldSwapWeapons())
-			{
-				VBCharacter->StopAnimMontage(VBCharacter->GetReloadMontage());
-				VBCharacter->MulticastInterruptReload();
-				VBCharacter->GetCombatComponent()->SwapWeapons();
-			}
-		}
+		VBCharacter->SwapWeapons();
 	}
 }
 
 void AVBPlayerController::PauseGame(const FInputActionValue& InputActionValue)
 {
+	if(!bPauseMenuOpen)
+	{
+		bPauseMenuOpen = true;
+		PauseMenuInstance = CreateWidget(this, PauseMenuWidgetClass);
+		if(PauseMenuInstance)
+		{
+			PauseMenuInstance->AddToViewport();
+			FInputModeGameAndUI InputModeData;
+			InputModeData.SetHideCursorDuringCapture(true);
+			SetInputMode(InputModeData);
+			SetShowMouseCursor(true);
+		}
+	}
+	else
+	{
+		bPauseMenuOpen = false;
+		if(PauseMenuInstance)
+		{
+			PauseMenuInstance->RemoveFromParent();
+			FInputModeGameOnly InputModeData;
+			SetInputMode(InputModeData);
+			SetShowMouseCursor(false);
+			PauseMenuInstance = nullptr;
+		}
+	}
 }
 
 void AVBPlayerController::ToggleScoreboard()

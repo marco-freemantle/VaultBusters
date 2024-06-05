@@ -45,6 +45,9 @@ public:
 	void InitTeamScores();
 	void HideTeamScores();
 
+	UFUNCTION(BlueprintCallable)
+	void PauseGame(const FInputActionValue& InputActionValue);
+
 	virtual float GetServerTime(); //Synced with server world clock
 	virtual void ReceivedPlayer() override; //Sync with server clock as soon as possible
 
@@ -175,7 +178,6 @@ private:
 	void DropWeapon(const FInputActionValue& InputActionValue);
 	void ThrowGrenade(const FInputActionValue& InputActionValue);
 	void SwapWeapons(const FInputActionValue& InputActionValue);
-	void PauseGame(const FInputActionValue& InputActionValue);
 	void ToggleScoreboard();
 
 	bool bCanEquip = true;
@@ -245,4 +247,13 @@ private:
 	UScoreboard* Scoreboard;
 	TArray<FPlayerInfo> CachedPlayerInfoArray;
 	bool bInitialiseScoreboard = false;
+
+	// In-game pause menu
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> PauseMenuWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* PauseMenuInstance;
+	
+	bool bPauseMenuOpen = false;
 };

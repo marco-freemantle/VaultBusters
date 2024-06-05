@@ -42,6 +42,7 @@ void AWeapon::BeginPlay()
 		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
 		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
 		WeaponMesh->OnComponentHit.AddDynamic(this, &AWeapon::OnHit);
+		SetReplicateMovement(true);
 	}
 	
 	if(PickupWidget)
@@ -94,7 +95,7 @@ void AWeapon::OnDropped()
 {
 	if(HasAuthority())
 	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}
 	WeaponMesh->SetSimulatePhysics(true);
 	WeaponMesh->SetEnableGravity(true);
