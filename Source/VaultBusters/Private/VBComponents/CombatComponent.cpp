@@ -247,16 +247,19 @@ void UCombatComponent::Reload()
 void UCombatComponent::ThrowGrenade()
 {
 	if(CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr ) return;
-	CombatState = ECombatState::ECS_ThrowingGrenade;
-	if(Character)
+	if(Character && Character->GetExplosiveGrenadeCount() > 0)
 	{
-		Character->PlayThrowGrenadeMontage();
-		AttachActorToLeftHand(EquippedWeapon);
-		ShowAttachedGrenade(true);
-	}
-	if(Character && !Character->HasAuthority())
-	{
-		ServerThrowGrenade();
+		CombatState = ECombatState::ECS_ThrowingGrenade;
+		if(Character)
+		{
+			Character->PlayThrowGrenadeMontage();
+			AttachActorToLeftHand(EquippedWeapon);
+			ShowAttachedGrenade(true);
+		}
+		if(Character && !Character->HasAuthority())
+		{
+			ServerThrowGrenade();
+		}
 	}
 }
 
@@ -379,6 +382,8 @@ void UCombatComponent::ServerLaunchGrenade_Implementation(const FVector_NetQuant
 		{
 			World->SpawnActor<AProjectile>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParams);
 		}
+		Character->ExpendExplosiveGrenade();
+		Character->UpdateHUDGrenadeCount();
 	}
 }
 

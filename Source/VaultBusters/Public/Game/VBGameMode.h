@@ -49,6 +49,7 @@ public:
 	virtual void PlayerEliminated(AVBCharacter* ElimmedCharacter, AVBPlayerController* VictimController, AVBPlayerController* AttackerController);
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage);
+	void UpdateScoreboards();
 
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 10.f;
@@ -78,7 +79,6 @@ protected:
 
 private:
 	float CountdownTime = 0.f;
-	void UpdateScoreboards();
 
 public:
 	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }

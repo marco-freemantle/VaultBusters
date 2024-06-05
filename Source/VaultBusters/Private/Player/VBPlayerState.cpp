@@ -2,8 +2,6 @@
 
 #include "Player/VBPlayerState.h"
 #include "Character/VBCharacter.h"
-#include "Game/VBGameMode.h"
-#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/VBPlayerController.h"
 
@@ -19,43 +17,16 @@ void AVBPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void AVBPlayerState::AddToScore(float ScoreAmount)
 {
 	SetScore(GetScore() + ScoreAmount);
-	Character = Character == nullptr ? Cast<AVBCharacter>(GetPawn()) : Character;
-	if(Character)
-	{
-		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
-		if(Controller)
-		{
-			Controller->SetHUDScore(GetScore());
-		}
-	}
 }
 
 void AVBPlayerState::AddToKills(int32 KillsAmount)
 {
 	Kills += KillsAmount;
-	Character = Character == nullptr ? Cast<AVBCharacter>(GetPawn()) : Character;
-	if(Character)
-	{
-		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
-		if(Controller)
-		{
-			Controller->SetHUDKills(Kills);
-		}
-	}
 }
 
 void AVBPlayerState::AddToDeaths(int32 DeathsAmount)
 {
 	Deaths += DeathsAmount;
-	Character = Character == nullptr ? Cast<AVBCharacter>(GetPawn()) : Character;
-	if(Character)
-	{
-		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
-		if(Controller)
-		{
-			Controller->SetHUDDeaths(Deaths);
-		}
-	}
 }
 
 void AVBPlayerState::OnRep_Score()
@@ -68,7 +39,7 @@ void AVBPlayerState::OnRep_Score()
 		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 		if(Controller)
 		{
-			Controller->SetHUDScore(GetScore());
+			
 		}
 	}
 }
@@ -81,7 +52,7 @@ void AVBPlayerState::OnRep_Kills()
 		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 		if(Controller)
 		{
-			Controller->SetHUDKills(Kills);
+			
 		}
 	}
 }
@@ -94,7 +65,7 @@ void AVBPlayerState::OnRep_Deaths()
 		Controller = Controller == nullptr ? Cast<AVBPlayerController>(Character->Controller) : Controller;
 		if(Controller)
 		{
-			Controller->SetHUDDeaths(Deaths);
+			
 		}
 	}
 }

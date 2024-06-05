@@ -32,6 +32,7 @@ public:
 	void UpdateHUDHealth();
 	void UpdateHUDShield();
 	void UpdateHUDAmmo();
+	void UpdateHUDGrenadeCount();
 	void PlayFireMontage(bool bAiming);
 	void PlayHitReactMontage();
 	void PlayReloadMontage();
@@ -175,6 +176,13 @@ private:
 	UPROPERTY()
 	AVBGameMode* VBGameMode;
 
+	// Throwables
+	UPROPERTY(ReplicatedUsing=OnRep_ExplosiveGrenadeCount)
+	int32 ExplosiveGrenadeCount = 2;
+
+	UFUNCTION()
+	void OnRep_ExplosiveGrenadeCount();
+
 public:
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
 	FORCEINLINE UBuffComponent* GetBuff() const { return Buff; }
@@ -190,6 +198,9 @@ public:
 	FORCEINLINE float GetMaxShield() const { return MaxShield; }
 	FORCEINLINE void SetHealth(float Amount) { Health = Amount; }
 	FORCEINLINE bool IsElimmed() const { return bElimmed; }
+	FORCEINLINE int32 GetExplosiveGrenadeCount() const { return ExplosiveGrenadeCount; }
+	FORCEINLINE void ExpendExplosiveGrenade() { --ExplosiveGrenadeCount; }
+	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
 	AWeapon* GetEquippedWeapon() const;
 	ECombatState GetCombatState() const;
 

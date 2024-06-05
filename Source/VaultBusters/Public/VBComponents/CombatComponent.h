@@ -178,6 +178,7 @@ private:
 
 	UFUNCTION()
 	void OnRep_CombatState();
-
+	
+public:
 	bool ShouldSwapWeapons();
 };

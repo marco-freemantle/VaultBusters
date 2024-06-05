@@ -64,11 +64,9 @@ void AVBPlayerController::PollInit()
 			{
 				if (bInitialiseHealth) SetHUDHealth(HUDHealth, HUDMaxHealth);
 				if (bInitialiseShield) SetHUDShield(HUDShield, HUDMaxShield);
-				if (bInitialiseScore) SetHUDScore(HUDScore);
-				if (bInitialiseDeaths) SetHUDDeaths(HUDDeaths);
-				if (bInitialiseKills) SetHUDKills(HUDKills);
 				if (bInitialiseWeaponAmmo) SetHUDWeaponAmmo(HUDWeaponAmmo);
 				if (bInitialiseWeaponTotalAmmo) SetHUDWeaponTotalAmmo(HUDWeaponTotalAmmo);
+				if (bInitialiseGrenadeCount) SetHUDExplosiveGrenadeCount(HUDGrenadeCount);
 			}
 		}
 	}
@@ -173,6 +171,8 @@ void AVBPlayerController::SetupInputComponent()
 	VBInputComponent->BindAction(ShowScoreboardAction, ETriggerEvent::Started, this, &AVBPlayerController::ToggleScoreboard);
 	VBInputComponent->BindAction(ShowScoreboardAction, ETriggerEvent::Completed, this, &AVBPlayerController::ToggleScoreboard);
 	VBInputComponent->BindAction(ThrowGrenadeAction, ETriggerEvent::Triggered, this, &AVBPlayerController::ThrowGrenade);
+	VBInputComponent->BindAction(PauseGameAction, ETriggerEvent::Started, this, &AVBPlayerController::PauseGame);
+	VBInputComponent->BindAction(SwapWeaponsAction, ETriggerEvent::Started, this, &AVBPlayerController::SwapWeapons);
 }
 
 void AVBPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -255,6 +255,26 @@ void AVBPlayerController::ThrowGrenade(const FInputActionValue& InputActionValue
 			VBCharacter->GetCombatComponent()->ThrowGrenade();
 		}
 	}
+}
+
+void AVBPlayerController::SwapWeapons(const FInputActionValue& InputActionValue)
+{
+	if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+	{
+		if(VBCharacter->GetCombatComponent())
+		{
+			if(VBCharacter->GetCombatComponent()->ShouldSwapWeapons())
+			{
+				VBCharacter->StopAnimMontage(VBCharacter->GetReloadMontage());
+				VBCharacter->MulticastInterruptReload();
+				VBCharacter->GetCombatComponent()->SwapWeapons();
+			}
+		}
+	}
+}
+
+void AVBPlayerController::PauseGame(const FInputActionValue& InputActionValue)
+{
 }
 
 void AVBPlayerController::ToggleScoreboard()
@@ -383,51 +403,6 @@ void AVBPlayerController::SetHUDShield(float Shield, float MaxShield)
     }
 }
 
-void AVBPlayerController::SetHUDScore(float Score)
-{
-	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->ScoreAmount)
-	{
-		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
-		VBHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
-	}
-	else
-	{
-		bInitialiseScore = true;
-		HUDScore = Score;
-	}
-}
-
-void AVBPlayerController::SetHUDKills(int32 Kills)
-{
-	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->KillsAmount)
-	{
-		FString KillsText = FString::Printf(TEXT("%d"), Kills);
-		VBHUD->CharacterOverlay->KillsAmount->SetText(FText::FromString(KillsText));
-	}
-	else
-	{
-		bInitialiseKills = true;
-		HUDKills = Kills;
-	}
-}
-
-void AVBPlayerController::SetHUDDeaths(int32 Deaths)
-{
-	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	if(VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->DeathsAmount)
-	{
-		FString DeathsText = FString::Printf(TEXT("%d"), Deaths);
-		VBHUD->CharacterOverlay->DeathsAmount->SetText(FText::FromString(DeathsText));
-	}
-	else
-	{
-		bInitialiseDeaths = true;
-		HUDDeaths = Deaths;
-	}
-}
-
 void AVBPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 {
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
@@ -514,24 +489,44 @@ void AVBPlayerController::SetHUDDefendingTeamScore(int32 DefendingTeamScore)
 	}
 }
 
+void AVBPlayerController::SetHUDExplosiveGrenadeCount(int32 ExplosiveGrenadeCount)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->ExplosiveGrenadeCount)
+	{
+		if (AVBCharacter* VBCharacter = Cast<AVBCharacter>(GetCharacter()))
+		{
+			FString ExplosiveGrenadeCountText = FString::Printf(TEXT("%d"), ExplosiveGrenadeCount);
+			VBHUD->CharacterOverlay->ExplosiveGrenadeCount->SetText(FText::FromString(ExplosiveGrenadeCountText));
+		}
+	}
+	else
+	{
+		bInitialiseGrenadeCount = true;
+		HUDGrenadeCount = ExplosiveGrenadeCount;
+	}
+}
+
 void AVBPlayerController::InitTeamScores()
 {
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->AttackingTeamScore && VBHUD->CharacterOverlay->DefendingTeamScore)
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->AttackingTeamScore && VBHUD->CharacterOverlay->DefendingTeamScore && VBHUD->CharacterOverlay->ScoreSeparatorImage)
 	{
 		FString Zero("0");
 		VBHUD->CharacterOverlay->AttackingTeamScore->SetText(FText::FromString(Zero));
 		VBHUD->CharacterOverlay->DefendingTeamScore->SetText(FText::FromString(Zero));
+		VBHUD->CharacterOverlay->ScoreSeparatorImage->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
 void AVBPlayerController::HideTeamScores()
 {
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->AttackingTeamScore && VBHUD->CharacterOverlay->DefendingTeamScore)
+	if (VBHUD && VBHUD->CharacterOverlay && VBHUD->CharacterOverlay->AttackingTeamScore && VBHUD->CharacterOverlay->DefendingTeamScore && VBHUD->CharacterOverlay->ScoreSeparatorImage)
 	{
 		VBHUD->CharacterOverlay->AttackingTeamScore->SetText(FText());
 		VBHUD->CharacterOverlay->DefendingTeamScore->SetText(FText());
+		VBHUD->CharacterOverlay->ScoreSeparatorImage->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -815,6 +810,10 @@ void AVBPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 		else
 		{
 			if(VBHUD->Scoreboard == nullptr) VBHUD->AddScoreboard();
+			if(!bHasShowTeamScoresReplicated)
+			{
+				HideTeamScores();
+			}
 		}
 		if(VBHUD->Announcement)
 		{
@@ -847,7 +846,7 @@ void AVBPlayerController::HandleCooldown()
 		if(VBHUD->Announcement && VBHUD->Announcement->AnnouncementText)
 		{
 			VBHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
-			FString AnnouncementText("New Match Starts n:");
+			FString AnnouncementText("New Match Starting");
 			VBHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
 		}
 	}
@@ -856,6 +855,7 @@ void AVBPlayerController::HandleCooldown()
 
 void AVBPlayerController::OnRep_ShowTeamScores()
 {
+	bHasShowTeamScoresReplicated = true;
 	if(bShowTeamScores)
 	{
 		InitTeamScores();
@@ -870,8 +870,7 @@ void AVBPlayerController::OnRep_ShowTeamScores()
 
 void AVBPlayerController::ServerCheckMatchState_Implementation()
 {
-	AVBGameMode* GameMode = Cast<AVBGameMode>(UGameplayStatics::GetGameMode(this));
-	if(GameMode)
+	if(AVBGameMode* GameMode = Cast<AVBGameMode>(UGameplayStatics::GetGameMode(this)))
 	{
 		WarmupTime = GameMode->WarmupTime;
 		MatchTime = GameMode->MatchTime;

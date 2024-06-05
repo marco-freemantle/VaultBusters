@@ -28,15 +28,6 @@ public:
 	UTextBlock* ShieldText;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* ScoreAmount;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* KillsAmount;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* DeathsAmount;
-
-	UPROPERTY(meta = (BindWidget))
 	UTextBlock* AmmoAmount;
 
 	UPROPERTY(meta = (BindWidget))
@@ -56,7 +47,13 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* DefendingTeamScore;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* ScoreSeparatorImage ;
 	
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* Killfeeds;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* ExplosiveGrenadeCount;
 };

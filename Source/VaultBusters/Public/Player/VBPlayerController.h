@@ -34,9 +34,6 @@ public:
 
 	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDShield(float Shield, float MaxShield);
-	void SetHUDScore(float Score);
-	void SetHUDKills(int32 Kills);
-	void SetHUDDeaths(int32 Deaths);
 	void SetHUDWeaponAmmo(int32 Ammo);
 	void SetHUDWeaponTotalAmmo(int32 TotalAmmo);
 	void SetHUDMatchCountDown(float CountDownTime);
@@ -44,6 +41,7 @@ public:
 
 	void SetHUDAttackingTeamScore(int32 AttackingTeamScore);
 	void SetHUDDefendingTeamScore(int32 DefendingTeamScore);
+	void SetHUDExplosiveGrenadeCount(int32 ExplosiveGrenadeCount);
 	void InitTeamScores();
 	void HideTeamScores();
 
@@ -114,6 +112,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_ShowTeamScores();
+	bool bHasShowTeamScoresReplicated = false;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Input")
@@ -155,6 +154,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> ThrowGrenadeAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> SwapWeaponsAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> PauseGameAction;
+
 	void Move(const FInputActionValue& InputActionValue);
 	void LookUp(const FInputActionValue& InputActionValue);
 	void Turn(const FInputActionValue& InputActionValue);
@@ -169,6 +174,8 @@ private:
 	void Reload(const FInputActionValue& InputActionValue);
 	void DropWeapon(const FInputActionValue& InputActionValue);
 	void ThrowGrenade(const FInputActionValue& InputActionValue);
+	void SwapWeapons(const FInputActionValue& InputActionValue);
+	void PauseGame(const FInputActionValue& InputActionValue);
 	void ToggleScoreboard();
 
 	bool bCanEquip = true;
@@ -227,16 +234,12 @@ private:
 	float HUDShield;
 	bool bInitialiseShield = false;
 	float HUDMaxShield;
-	float HUDScore;
-	bool bInitialiseScore = false;
-	int32 HUDKills;
-	bool bInitialiseKills = false;
-	int32 HUDDeaths;
-	bool bInitialiseDeaths = false;
 	int32 HUDWeaponAmmo;
 	bool bInitialiseWeaponAmmo = false;
 	int32 HUDWeaponTotalAmmo;
 	bool bInitialiseWeaponTotalAmmo = false;
+	int32 HUDGrenadeCount;
+	bool bInitialiseGrenadeCount = false;
 	
 	UPROPERTY()
 	UScoreboard* Scoreboard;

@@ -65,6 +65,7 @@ void AVBCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME_CONDITION(AVBCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(AVBCharacter, Health);
 	DOREPLIFETIME(AVBCharacter, Shield);
+	DOREPLIFETIME(AVBCharacter, ExplosiveGrenadeCount);
 }
 
 void AVBCharacter::PostInitializeComponents()
@@ -89,6 +90,7 @@ void AVBCharacter::BeginPlay()
 	UpdateHUDAmmo();
 	UpdateHUDHealth();
 	UpdateHUDShield();
+	UpdateHUDGrenadeCount();
 	if(HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AVBCharacter::ReceiveDamage);
@@ -581,6 +583,15 @@ void AVBCharacter::UpdateHUDAmmo()
 	}
 }
 
+void AVBCharacter::UpdateHUDGrenadeCount()
+{
+	VBPlayerController = VBPlayerController == nullptr ? Cast<AVBPlayerController>(Controller) : VBPlayerController;
+	if(VBPlayerController)
+	{
+		VBPlayerController->SetHUDExplosiveGrenadeCount(ExplosiveGrenadeCount);
+	}
+}
+
 void AVBCharacter::OnRep_Health(float LastHealth)
 {
 	UpdateHUDHealth();
@@ -597,4 +608,9 @@ void AVBCharacter::OnRep_Shield(float LastShield)
 	{
 		PlayHitReactMontage();
 	}
+}
+
+void AVBCharacter::OnRep_ExplosiveGrenadeCount()
+{
+	UpdateHUDGrenadeCount();
 }

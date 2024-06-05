@@ -34,6 +34,8 @@ void ATeamsGameMode::PostLogin(APlayerController* NewPlayer)
 			}
 		}
 	}
+
+	UpdateScoreboards();
 }
 
 void ATeamsGameMode::Logout(AController* Exiting)
