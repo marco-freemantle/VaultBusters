@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Announcement.generated.h"
 
+class UBorder;
 class UTextBlock;
 /**
  * 
@@ -21,4 +22,10 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* AnnouncementText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* WinLoseText;
+
+	UPROPERTY(meta = (BindWidget))
+	UBorder* WinLoseBorder;
 };

@@ -12,15 +12,21 @@
   <component name="ChangeListManager">
     <list default="true" id="a5dcea6c-be5f-458b-b394-3f57cc1632cc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_TeamsGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_TeamsGameMode.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/Menus/WBP_TitleSettings.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/HUD/Menus/WBP_TitleSettings.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Input/IMC_VBContext.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Input/IMC_VBContext.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/WBP_Announcement.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/WBP_Announcement.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBPlayerController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Player/BP_VBPlayerController.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Maps/LobbyMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/LobbyMap.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/MainMenu.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/MainMenu.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/TestMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/TeamsGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/TeamsGameMode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameMode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Game/TeamsGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Game/TeamsGameMode.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Game/VBGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Game/VBGameMode.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/Announcement.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/Announcement.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/VBHUD.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/VBHUD.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerController.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +49,10 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
@@ -320,7 +330,10 @@
       <workItem from="1717499597558" duration="5720000" />
       <workItem from="1717580805209" duration="4276000" />
       <workItem from="1717586077413" duration="5154000" />
-      <workItem from="1717591321755" duration="3195000" />
+      <workItem from="1717591321755" duration="5283000" />
+      <workItem from="1717658896103" duration="2899000" />
+      <workItem from="1717669210694" duration="3707000" />
+      <workItem from="1717673013313" duration="2747000" />
     </task>
     <servers />
   </component>

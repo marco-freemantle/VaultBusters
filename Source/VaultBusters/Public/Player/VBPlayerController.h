@@ -93,6 +93,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateScoreboard(const TArray<FPlayerInfo>& PlayerInfoArray);
 
+	UFUNCTION(Client, Reliable)
+	void ClientSetHUDAnnouncementText(const FString& WinLoseText);
+
 	void OnMatchStateSet(FName State, bool bTeamsMatch = false);
 
 	ETeam GetPlayerTeam();

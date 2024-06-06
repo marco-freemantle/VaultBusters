@@ -483,6 +483,24 @@ void AVBPlayerController::SetHUDAnnouncementCountdown(float CountDownTime)
 
 		FString CountDownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		VBHUD->Announcement->WarmupTime->SetText(FText::FromString(CountDownText));
+
+		if(VBHUD->Announcement->WinLoseBorder && MatchState == MatchState::WaitingToStart)
+		{
+			VBHUD->Announcement->WinLoseBorder->SetVisibility(ESlateVisibility::Hidden);
+		}
+		if(VBHUD->Announcement->WinLoseBorder && MatchState == MatchState::Cooldown)
+		{
+			VBHUD->Announcement->WinLoseBorder->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+}
+
+void AVBPlayerController::ClientSetHUDAnnouncementText_Implementation(const FString& WinLoseText)
+{
+	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
+	if (VBHUD && VBHUD->Announcement && VBHUD->Announcement->WinLoseText)
+	{
+		VBHUD->Announcement->WinLoseText->SetText(FText::FromString(WinLoseText));
 	}
 }
 
@@ -711,7 +729,7 @@ void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPl
 {
 	CachedPlayerInfoArray = PlayerInfoArray;
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
-	
+	if(!VBHUD) return;
 	UTeamScoreboard* TeamScoreboard = Cast<UTeamScoreboard>(VBHUD->Scoreboard);
 
 	// Not a team scoreboard
@@ -779,7 +797,6 @@ void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPl
 						{
 							TeamScoreboard->DefendingTeamScoreList->AddChild(ScoreboardItemWidget);
 						}
-						//VBHUD->Scoreboard->ScoreList->AddChild(ScoreboardItemWidget);
 					}
 				}
 			}
@@ -863,8 +880,12 @@ void AVBPlayerController::HandleCooldown()
 		if(VBHUD->Announcement && VBHUD->Announcement->AnnouncementText)
 		{
 			VBHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
-			FString AnnouncementText("New Match Starting");
+			FString AnnouncementText("Leaving Match");
 			VBHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
+			if(VBHUD->Announcement->WinLoseBorder)
+			{
+				VBHUD->Announcement->WinLoseBorder->SetVisibility(ESlateVisibility::Visible);
+			}
 		}
 	}
 	DisableInput(this);

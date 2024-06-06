@@ -22,4 +22,6 @@ public:
 	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage) override;
 protected:
 	virtual void HandleMatchHasStarted() override;
+private:
+	virtual void FindMatchWinner() override;
 };

@@ -14,6 +14,8 @@ namespace MatchState
 
 AVBGameMode::AVBGameMode()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	bDelayedStart = true;
 }
 
@@ -72,9 +74,16 @@ void AVBGameMode::Tick(float DeltaSeconds)
 	else if (MatchState == MatchState::Cooldown)
 	{
 		CountdownTime = CooldownTime + WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+
+		if(!bHasFoundWinner)
+		{
+			FindMatchWinner();
+			bHasFoundWinner = true;
+		}
+		
 		if(CountdownTime <= 0.f)
 		{
-			RestartGame();
+			EndVBMatch();
 		}
 	}
 }
@@ -183,12 +192,51 @@ void AVBGameMode::UpdateScoreboards()
 	}
 
 	FTimerHandle UpateScoreboardTimerHandle;
-
 	// Update scoreboard after 1 second
 	GetWorldTimerManager().SetTimer(UpateScoreboardTimerHandle, [this]() {
 		for (AVBPlayerController* PlayerController : ConnectedControllers)
 		{
-			PlayerController->ClientUpdateScoreboard(PlayerInfoArray);
+			if(PlayerController)
+			{
+				PlayerController->ClientUpdateScoreboard(PlayerInfoArray);
+			}
 		}
 		}, 1.f, false);
 }
+
+void AVBGameMode::FindMatchWinner()
+{
+	int32 HighestScore = 0;
+	TArray<AVBPlayerController*> PlayerControllers;
+
+	// First pass to find the highest score
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		AVBPlayerController* IndexedController = Cast<AVBPlayerController>(It->Get());
+		if (!IndexedController) continue;
+
+		PlayerControllers.Add(IndexedController);
+
+		AVBPlayerState* IndexedPlayerState = IndexedController->GetPlayerState<AVBPlayerState>();
+		if (!IndexedPlayerState) continue;
+
+		HighestScore = FMath::Max(HighestScore, IndexedPlayerState->GetScore());
+	}
+
+	// Second pass to set the announcement text
+	for (AVBPlayerController* IndexedController : PlayerControllers)
+	{
+		AVBPlayerState* IndexedPlayerState = IndexedController->GetPlayerState<AVBPlayerState>();
+		if (!IndexedPlayerState) continue;
+
+		if (IndexedPlayerState->GetScore() == HighestScore)
+		{
+			IndexedController->ClientSetHUDAnnouncementText("YOU WIN");
+		}
+		else
+		{
+			IndexedController->ClientSetHUDAnnouncementText("YOU LOSE");
+		}
+	}
+}
+

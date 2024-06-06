@@ -118,3 +118,39 @@ void ATeamsGameMode::HandleMatchHasStarted()
 		}
 	}
 }
+
+void ATeamsGameMode::FindMatchWinner()
+{
+	int32 HighestScore = 0;
+	TArray<AVBPlayerController*> PlayerControllers;
+
+	// First pass to find the highest score
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		AVBPlayerController* IndexedController = Cast<AVBPlayerController>(It->Get());
+		if (!IndexedController) continue;
+
+		PlayerControllers.Add(IndexedController);
+
+		AVBPlayerState* IndexedPlayerState = IndexedController->GetPlayerState<AVBPlayerState>();
+		if (!IndexedPlayerState) continue;
+
+		HighestScore = FMath::Max(HighestScore, IndexedPlayerState->GetScore());
+	}
+
+	// Second pass to set the announcement text
+	for (AVBPlayerController* IndexedController : PlayerControllers)
+	{
+		AVBPlayerState* IndexedPlayerState = IndexedController->GetPlayerState<AVBPlayerState>();
+		if (!IndexedPlayerState) continue;
+
+		if (IndexedPlayerState->GetScore() == HighestScore)
+		{
+			IndexedController->ClientSetHUDAnnouncementText("YOU WIN");
+		}
+		else
+		{
+			IndexedController->ClientSetHUDAnnouncementText("YOU LOSE");
+		}
+	}
+}

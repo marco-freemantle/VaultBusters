@@ -50,6 +50,9 @@ public:
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage);
 	void UpdateScoreboards();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void EndVBMatch();
 
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 10.f;
@@ -79,6 +82,9 @@ protected:
 
 private:
 	float CountdownTime = 0.f;
+
+	virtual void FindMatchWinner();
+	bool bHasFoundWinner = false;
 
 public:
 	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }
