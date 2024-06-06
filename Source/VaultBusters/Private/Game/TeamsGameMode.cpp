@@ -121,36 +121,36 @@ void ATeamsGameMode::HandleMatchHasStarted()
 
 void ATeamsGameMode::FindMatchWinner()
 {
-	int32 HighestScore = 0;
-	TArray<AVBPlayerController*> PlayerControllers;
-
-	// First pass to find the highest score
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	if (AVBGameState* VBGameState = GetGameState<AVBGameState>())
 	{
-		AVBPlayerController* IndexedController = Cast<AVBPlayerController>(It->Get());
-		if (!IndexedController) continue;
-
-		PlayerControllers.Add(IndexedController);
-
-		AVBPlayerState* IndexedPlayerState = IndexedController->GetPlayerState<AVBPlayerState>();
-		if (!IndexedPlayerState) continue;
-
-		HighestScore = FMath::Max(HighestScore, IndexedPlayerState->GetScore());
-	}
-
-	// Second pass to set the announcement text
-	for (AVBPlayerController* IndexedController : PlayerControllers)
-	{
-		AVBPlayerState* IndexedPlayerState = IndexedController->GetPlayerState<AVBPlayerState>();
-		if (!IndexedPlayerState) continue;
-
-		if (IndexedPlayerState->GetScore() == HighestScore)
+		auto AnnounceToTeam = [](const TArray<AVBPlayerState*>& Team, const FString& Message)
 		{
-			IndexedController->ClientSetHUDAnnouncementText("YOU WIN");
+			for (AVBPlayerState* PlayerState : Team)
+			{
+				if (!PlayerState) continue;
+				if (AVBPlayerController* PlayerController = Cast<AVBPlayerController>(PlayerState->GetPlayerController()))
+				{
+					PlayerController->ClientSetHUDAnnouncementText(Message);
+				}
+			}
+		};
+
+		if (VBGameState->AttackingTeamScore > VBGameState->DefendingTeamScore)
+		{
+			AnnounceToTeam(VBGameState->AttackingTeam, "YOU WIN");
+			AnnounceToTeam(VBGameState->DefendingTeam, "YOU LOSE");
+		}
+		else if (VBGameState->AttackingTeamScore < VBGameState->DefendingTeamScore)
+		{
+			AnnounceToTeam(VBGameState->DefendingTeam, "YOU WIN");
+			AnnounceToTeam(VBGameState->AttackingTeam, "YOU LOSE");
 		}
 		else
 		{
-			IndexedController->ClientSetHUDAnnouncementText("YOU LOSE");
+			TArray<AVBPlayerState*> BothTeams = VBGameState->DefendingTeam;
+			BothTeams.Append(VBGameState->AttackingTeam);
+			AnnounceToTeam(BothTeams, "IT'S A DRAW");
 		}
 	}
 }
+
