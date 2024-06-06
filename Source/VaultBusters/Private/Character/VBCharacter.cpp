@@ -280,7 +280,7 @@ void AVBCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 
 void AVBCharacter::SwapWeapons()
 {
-	if (Combat->ShouldSwapWeapons() && !HasAuthority() && OverlappingWeapon == nullptr)
+	if (Combat->ShouldSwapWeapons() && !HasAuthority())
 	{
 		Combat->CombatState = ECombatState::ECS_SwappingWeapons;
 		PlaySwapWeaponsMontage();

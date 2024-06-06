@@ -12,20 +12,16 @@
   <component name="ChangeListManager">
     <list default="true" id="a5dcea6c-be5f-458b-b394-3f57cc1632cc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.VaultBusters/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Animation/SwapWeapons.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Animation/SwapWeapons.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/BP_VBCharacter.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_TeamsGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_TeamsGameMode.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Game/BP_VBGameMode.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/WBP_Announcement.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/WBP_Announcement.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/WBP_InGameMenu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/HUD/InGame/WBP_InGameMenu.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/Grenade/ExplosiveGrenade/BP_ExplosiveGrenade.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/Grenade/ExplosiveGrenade/BP_ExplosiveGrenade.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Maps/MainMenu.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/MainMenu.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/Projectiles/BP_RocketProjectile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/Projectiles/BP_RocketProjectile.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/Projectiles/BP_SniperRifleProjectile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/Projectiles/BP_SniperRifleProjectile.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/TestMap.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Character/VBCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Game/VBGameMode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/HUD/VBHUD.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/HUD/VBHUD.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/Player/VBPlayerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Character/VBCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Character/VBCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/VBHUD.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/HUD/VBHUD.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Public/Player/VBPlayerController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/VaultBusters/Private/VBComponents/CombatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/VaultBusters/Private/VBComponents/CombatComponent.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -332,7 +328,8 @@
       <workItem from="1717591321755" duration="5283000" />
       <workItem from="1717658896103" duration="2899000" />
       <workItem from="1717669210694" duration="3707000" />
-      <workItem from="1717673013313" duration="12771000" />
+      <workItem from="1717673013313" duration="13333000" />
+      <workItem from="1717692245785" duration="2833000" />
     </task>
     <servers />
   </component>

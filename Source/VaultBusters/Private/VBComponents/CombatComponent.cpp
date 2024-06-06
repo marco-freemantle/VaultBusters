@@ -170,7 +170,6 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
 		EquippedWeapon->SetHUDAmmo();
-		SetAiming(false);
 	}
 	if(!EquippedWeapon && Character)
 	{
@@ -191,7 +190,6 @@ void UCombatComponent::OnRep_EquippedWeapon(const AWeapon* OldWeapon)
 	if(OldWeapon && Character && Character->IsLocallyControlled())
 	{
 		OldWeapon->GetWeaponMesh()->SetVisibility(true);
-		Character->ShowSniperScopeWidget(false);
 	}
 }
 
@@ -206,7 +204,6 @@ void UCombatComponent::OnRep_SecondaryWeapon(const AWeapon* OldWeapon)
 	}
 }
 
-// Called on the Server from AVBCharacter
 void UCombatComponent::DropWeapon()
 {
 	if(Character == nullptr) return;
@@ -358,6 +355,16 @@ void UCombatComponent::FinishSwapAttachWeapon()
 
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
 	AttachActorToBack(SecondaryWeapon);
+
+	if(Character && !Character->IsLocallyControlled()) return;
+	if(EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle && bAiming)
+	{
+		Character->ShowSniperScopeWidget(true);
+	}
+	if(EquippedWeapon->GetWeaponType() != EWeaponType::EWT_SniperRifle)
+	{
+		Character->ShowSniperScopeWidget(false);
+	}
 }
 
 void UCombatComponent::LaunchGrenade()

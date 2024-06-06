@@ -89,8 +89,7 @@ void AVBPlayerController::BeginPlay()
 	
 	check(VBContext);
 
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	if (Subsystem)
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(VBContext, 0);
 	}
@@ -832,10 +831,7 @@ void AVBPlayerController::OnRep_MatchState()
 
 void AVBPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 {
-	if(HasAuthority())
-	{
-		bShowTeamScores = bTeamsMatch;
-	}
+	if(HasAuthority()) bShowTeamScores = bTeamsMatch;
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
 	if(VBHUD)
 	{
