@@ -731,7 +731,7 @@ void AVBPlayerController::ClientUpdateScoreboard_Implementation(const TArray<FPl
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
 	if(!VBHUD) return;
 	UTeamScoreboard* TeamScoreboard = Cast<UTeamScoreboard>(VBHUD->Scoreboard);
-
+	
 	// Not a team scoreboard
 	if (VBHUD && VBHUD->Scoreboard && !TeamScoreboard)
 	{
@@ -822,7 +822,7 @@ void AVBPlayerController::OnRep_MatchState()
 {
 	if(MatchState == MatchState::InProgress)
 	{
-		HandleMatchHasStarted();
+		HandleMatchHasStarted(bShowTeamScores);
 	}
 	else if (MatchState == MatchState::Cooldown)
 	{
@@ -832,7 +832,10 @@ void AVBPlayerController::OnRep_MatchState()
 
 void AVBPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 {
-	if(HasAuthority()) bShowTeamScores = bTeamsMatch;
+	if(HasAuthority())
+	{
+		bShowTeamScores = bTeamsMatch;
+	}
 	VBHUD = VBHUD == nullptr ? Cast<AVBHUD>(GetHUD()) : VBHUD;
 	if(VBHUD)
 	{
@@ -889,6 +892,9 @@ void AVBPlayerController::HandleCooldown()
 		}
 	}
 	DisableInput(this);
+	
+	FInputActionValue DummyValue;
+	StopFire(DummyValue);
 }
 
 void AVBPlayerController::OnRep_ShowTeamScores()
@@ -915,26 +921,38 @@ void AVBPlayerController::ServerCheckMatchState_Implementation()
 		CooldownTime = GameMode->CooldownTime;
 		LevelStartingTime = GameMode->LevelStartingTime;
 		MatchState = GameMode->GetMatchState();
-		ClientJoinMidGame(MatchState, WarmupTime, MatchTime, CooldownTime, LevelStartingTime);
+		bShowTeamScores = GameMode->bTeamsMatch;
+		
+		ClientJoinMidGame(MatchState, WarmupTime, MatchTime, CooldownTime, LevelStartingTime, bShowTeamScores);
 
-		if(VBHUD && MatchState == MatchState::WaitingToStart)
+		if(VBHUD && (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown))
 		{
-			VBHUD->AddAnnouncement();
+			VBHUD->AddAnnouncement(true);
+		}
+		if(VBHUD && !(MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown))
+		{
+			VBHUD->AddAnnouncement(false);
 		}
 	}
 }
 
-void AVBPlayerController::ClientJoinMidGame_Implementation(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime)
+void AVBPlayerController::ClientJoinMidGame_Implementation(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime, bool IsTeamsMatch)
 {
 	WarmupTime = Warmup;
 	MatchTime = Match;
 	CooldownTime = Cooldown;
 	LevelStartingTime = StartingTime;
 	MatchState = StateOfMatch;
-	OnMatchStateSet(MatchState);
-	if(VBHUD && MatchState == MatchState::WaitingToStart)
+	bShowTeamScores = IsTeamsMatch;
+	OnMatchStateSet(MatchState, bShowTeamScores);
+	
+	if(VBHUD && (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown))
 	{
-		VBHUD->AddAnnouncement();
+		VBHUD->AddAnnouncement(true);
+	}
+	if(VBHUD && !(MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown))
+	{
+		VBHUD->AddAnnouncement(false);
 	}
 }
 
@@ -942,8 +960,7 @@ ETeam AVBPlayerController::GetPlayerTeam()
 {
 	if(VBOwnerCharacter)
 	{
-		AVBPlayerState* VBOwnerPlayerState = Cast<AVBPlayerState>(VBOwnerCharacter->GetPlayerState());
-		if(VBOwnerPlayerState)
+		if(AVBPlayerState* VBOwnerPlayerState = Cast<AVBPlayerState>(VBOwnerCharacter->GetPlayerState()))
 		{
 			return VBOwnerPlayerState->GetTeam();
 		}

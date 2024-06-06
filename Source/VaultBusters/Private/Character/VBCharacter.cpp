@@ -82,6 +82,19 @@ void AVBCharacter::PostInitializeComponents()
 	}
 }
 
+void AVBCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	if(Combat)
+	{
+		if(!Combat->EquippedWeapon) return;
+		Combat->EquippedWeapon->Destroy();
+		if(!Combat->SecondaryWeapon) return;
+		Combat->SecondaryWeapon->Destroy();
+	}
+}
+
 void AVBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -362,6 +375,7 @@ void AVBCharacter::Elim()
 			else
 			{
 				Combat->EquippedWeapon->Dropped();
+				Combat->EquippedWeapon = nullptr;
 			}
 		}
 		if(Combat->SecondaryWeapon)
@@ -373,6 +387,7 @@ void AVBCharacter::Elim()
 			else
 			{
 				Combat->SecondaryWeapon->Dropped();
+				Combat->SecondaryWeapon = nullptr;
 			}
 		}
 	}
@@ -386,6 +401,7 @@ void AVBCharacter::MulticastElim_Implementation()
 	{
 		VBPlayerController->SetHUDWeaponAmmo(0);
 		VBPlayerController->SetHUDWeaponTotalAmmo(0);
+		DisableInput(VBPlayerController);
 	}
 	bElimmed = true;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -393,10 +409,6 @@ void AVBCharacter::MulticastElim_Implementation()
 
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	if(VBPlayerController)
-	{
-		DisableInput(VBPlayerController);
-	}
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

@@ -87,13 +87,17 @@ void AVBHUD::AddTeamScoreboard()
 	}
 }
 
-void AVBHUD::AddAnnouncement()
+void AVBHUD::AddAnnouncement(bool bShouldDisplayImmediately)
 {
 	APlayerController* PlayerController = GetOwningPlayerController();
 	if(PlayerController && AnnouncementClass && Announcement == nullptr)
 	{
 		Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
 		Announcement->AddToViewport();
+		if(!bShouldDisplayImmediately)
+		{
+			Announcement->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 }
 

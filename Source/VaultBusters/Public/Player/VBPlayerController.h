@@ -111,7 +111,7 @@ protected:
 	void ServerCheckMatchState();
 
 	UFUNCTION(Client, Reliable)
-	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
+	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime, bool IsTeamsMatch);
 
 	UPROPERTY(ReplicatedUsing=OnRep_ShowTeamScores)
 	bool bShowTeamScores = false;

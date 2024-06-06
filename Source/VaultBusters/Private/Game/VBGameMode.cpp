@@ -190,18 +190,14 @@ void AVBGameMode::UpdateScoreboards()
 		NewPlayerInfo.PlayerTeam = TeamText;
 		PlayerInfoArray.Add(NewPlayerInfo);
 	}
-
-	FTimerHandle UpateScoreboardTimerHandle;
-	// Update scoreboard after 1 second
-	GetWorldTimerManager().SetTimer(UpateScoreboardTimerHandle, [this]() {
-		for (AVBPlayerController* PlayerController : ConnectedControllers)
+	
+	for (AVBPlayerController* PlayerController : ConnectedControllers)
+	{
+		if(PlayerController)
 		{
-			if(PlayerController)
-			{
-				PlayerController->ClientUpdateScoreboard(PlayerInfoArray);
-			}
+			PlayerController->ClientUpdateScoreboard(PlayerInfoArray);
 		}
-		}, 1.f, false);
+	}
 }
 
 void AVBGameMode::FindMatchWinner()

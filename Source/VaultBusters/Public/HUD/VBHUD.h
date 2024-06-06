@@ -68,7 +68,7 @@ public:
 	void AddCharacterOverlay();
 	void AddScoreboard();
 	void AddTeamScoreboard();
-	void AddAnnouncement();
+	void AddAnnouncement(bool bShouldDisplayImmediately);
 
 protected:
 	virtual void BeginPlay() override;
