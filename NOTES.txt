@@ -1,7 +1,7 @@
 For steam:
 - DefaultPlatformService=Steam
-- Use Lan should be false in BP_OnlineGameInstance and WBP_Rooms and WBP_TitlePlay
+- Use Lan should be false in BP_OnlineGameInstance, WBP_Rooms and WBP_TitlePlay
 
 For local:
 - DefaultPlatformService=NULL
-- Use Lan should be true in BP_OnlineGameInstance and WBP_Rooms and WBP_TitlePlay
+- Use Lan should be true in BP_OnlineGameInstance, WBP_Rooms and WBP_TitlePlay
