@@ -307,7 +307,7 @@ void AVBCharacter::EquipWeapon()
 {
 	if(Combat)
 	{
-		if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipWeapon();
+		ServerEquipWeapon();
 	}
 }
 
