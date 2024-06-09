@@ -19,7 +19,6 @@ class VAULTBUSTERS_API AVBPlayerState : public APlayerState
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	void AddToScore(float ScoreAmount);
 	void AddToKills(int32 KillsAmount);
 	void AddToDeaths(int32 DeathsAmount);

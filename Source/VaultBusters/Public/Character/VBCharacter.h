@@ -10,6 +10,7 @@
 #include "VBTypes/Team.h"
 #include "VBCharacter.generated.h"
 
+class UOverheadWidget;
 class AVBGameMode;
 class AVBPlayerState;
 class AVBPlayerController;
@@ -17,6 +18,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class AWeapon;
 class UCombatComponent;
+class UWidgetComponent;
 
 UCLASS()
 class VAULTBUSTERS_API AVBCharacter : public ACharacter, public IInteractWithCrosshairsInterface
@@ -30,6 +32,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	virtual void Destroyed() override;
+	void SetupOverheadWidget();
 	void UpdateHUDHealth();
 	void UpdateHUDShield();
 	void UpdateHUDAmmo();
@@ -90,6 +93,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	USkeletalMesh* DefendingTeamMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UWidgetComponent* OverheadWidget;
+
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
@@ -140,7 +146,7 @@ private:
 	UPROPERTY(EditAnywhere, Category=Combat)
 	UAnimMontage* SwapWeaponsMontage;
 
-	void HideCameraIfCharacterClose();
+	void HideCameraIfCharacterClose() const;
 
 	// Player health
 	UPROPERTY(EditAnywhere, Category="Player Stats")
@@ -163,6 +169,8 @@ private:
 	void OnRep_Shield(float LastShield);
 
 	bool bElimmed = false;
+
+	bool bOverheadWidgetSetup = false;
 
 	FTimerHandle ElimTimer;
 	void ElimTimerFinished();
@@ -207,6 +215,7 @@ public:
 	FORCEINLINE int32 GetExplosiveGrenadeCount() const { return ExplosiveGrenadeCount; }
 	FORCEINLINE void ExpendExplosiveGrenade() { --ExplosiveGrenadeCount; }
 	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
+	FORCEINLINE UWidgetComponent* GetOverheadWidget() const { return OverheadWidget; }
 	AWeapon* GetEquippedWeapon() const;
 	ECombatState GetCombatState() const;
 

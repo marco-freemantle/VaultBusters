@@ -1,13 +1,13 @@
 // Copyright Marco Freemantle
 
 #include "Character/VBCharacter.h"
-
-#include "Animation/AnimNotifies/AnimNotify_PlaySound.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Game/VBGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HUD/OverheadWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -46,6 +46,9 @@ AVBCharacter::AVBCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(RootComponent);
 
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
@@ -104,6 +107,7 @@ void AVBCharacter::BeginPlay()
 	UpdateHUDHealth();
 	UpdateHUDShield();
 	UpdateHUDGrenadeCount();
+	SetupOverheadWidget();
 	if(HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AVBCharacter::ReceiveDamage);
@@ -120,6 +124,7 @@ void AVBCharacter::Tick(float DeltaTime)
 
 	AimOffset(DeltaTime);
 	HideCameraIfCharacterClose();
+	SetupOverheadWidget();
 	PollInit();
 }
 
@@ -542,7 +547,7 @@ void AVBCharacter::TurnInPlace(float DeltaTime)
 	}
 }
 
-void AVBCharacter::HideCameraIfCharacterClose()
+void AVBCharacter::HideCameraIfCharacterClose() const
 {
 	if(!IsLocallyControlled()) return;
 
@@ -634,4 +639,38 @@ void AVBCharacter::OnRep_Shield(float LastShield)
 void AVBCharacter::OnRep_ExplosiveGrenadeCount()
 {
 	UpdateHUDGrenadeCount();
+}
+
+void AVBCharacter::SetupOverheadWidget()
+{
+	if(bOverheadWidgetSetup) return;
+	if (UUserWidget* PlayerWidget = OverheadWidget->GetUserWidgetObject())
+	{
+		if(UOverheadWidget* PlayerOverheadWidget = Cast<UOverheadWidget>(PlayerWidget); GetPlayerState())
+		{
+			FString Name = GetPlayerState()->GetPlayerName();
+			PlayerOverheadWidget->SetDisplayText(Name);
+			
+			if(!VBPlayerState) return;
+			
+			if(IsLocallyControlled())
+			{
+				OverheadWidget->SetVisibility(false);
+			}
+			if (!IsLocallyControlled())
+			{
+				AVBPlayerState* RemotePlayerState = Cast<AVBPlayerState>(GetPlayerState());
+				AVBPlayerState* LocalPlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<AVBPlayerState>();
+
+				if (RemotePlayerState && LocalPlayerState)
+				{
+					if(RemotePlayerState->GetTeam() != LocalPlayerState->GetTeam())
+					{
+						OverheadWidget->SetVisibility(false);
+					}
+				}
+			}
+			bOverheadWidgetSetup = true;
+		}
+	}
 }

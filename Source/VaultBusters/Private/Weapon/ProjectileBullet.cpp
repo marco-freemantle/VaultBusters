@@ -1,8 +1,6 @@
 // Copyright Marco Freemantle
 
-
 #include "Weapon/ProjectileBullet.h"
-
 #include "Character/VBCharacter.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -11,11 +9,9 @@
 void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                               FVector NormalImpulse, const FHitResult& Hit)
 {
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
-	if(OwnerCharacter)
+	if(ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner()))
 	{
-		AVBPlayerController* OwnerController = Cast<AVBPlayerController>(OwnerCharacter->Controller);
-		if(OwnerController)
+		if(AVBPlayerController* OwnerController = Cast<AVBPlayerController>(OwnerCharacter->Controller))
 		{
 			bool bWasHeadShot = Hit.BoneName.ToString() == FString("head");
 			const float DamageToCause = bWasHeadShot ? HeadShotDamage : Damage;
