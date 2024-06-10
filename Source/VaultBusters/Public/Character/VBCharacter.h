@@ -89,6 +89,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USkeletalMesh* AttackingTeamMesh;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* AttackingTeamHairMesh;
 	
 	UPROPERTY(EditAnywhere)
 	USkeletalMesh* DefendingTeamMesh;

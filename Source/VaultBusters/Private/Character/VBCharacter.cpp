@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Game/VBGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/OverheadWidget.h"
@@ -47,6 +48,10 @@ AVBCharacter::AVBCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
+	AttackingTeamHairMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HairMesh"));
+	AttackingTeamHairMesh->SetupAttachment(GetMesh(), FName("HeadSocket"));
+	AttackingTeamHairMesh->SetVisibility(false);
+	
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
 
@@ -168,15 +173,21 @@ void AVBCharacter::SetTeamMesh(ETeam Team)
 	switch (Team)
 	{
 	case ETeam::ET_AttackingTeam:
+	{
 		GetMesh()->SetSkeletalMesh(AttackingTeamMesh);
+		AttackingTeamHairMesh->SetVisibility(true);
 		break;
+	}
 	case ETeam::ET_DefendingTeam:
+	{
 		GetMesh()->SetSkeletalMesh(DefendingTeamMesh);
 		break;
+	}
 	case ETeam::ET_NoTeam:
 		break;
 	}
 }
+
 
 void AVBCharacter::PlayFireMontage(bool bAiming)
 {
